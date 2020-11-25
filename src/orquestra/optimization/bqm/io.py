@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from os import PathLike
+from typing import Dict, Any, IO, Union
 
 import dimod
 from zquantum.core.utils import SCHEMA_VERSION
@@ -58,23 +59,23 @@ def bqm_from_serializable(
     )
 
 
-def load_qubo(input_file):
-    if isinstance(input_file, TextIOBase):
+def load_qubo(input_file: Union[TextIOBase, IO[str], str, PathLike]):
+    try:
         qubo_dict = json.load(input_file)
-    else:
-        with open(input_file, 'r') as f:
-            qubo_dict = json.load(f)
+    except AttributeError:
+        with open(input_file, 'r') as input_file:
+            qubo_dict = json.load(input_file)
 
     del qubo_dict["schema"]
-    return BinaryQuadraticModel.from_serializable(qubo_dict)
+    return bqm_from_serializable(qubo_dict)
 
 
-def save_qubo(qubo, output_file):
-    dict_qubo = qubo.to_serializable()
+def save_qubo(qubo, output_file: Union[TextIOBase, IO[str], str, PathLike]):
+    dict_qubo = bqm_to_serializable(qubo)
     dict_qubo["schema"] = SCHEMA_VERSION + "-qubo"
 
-    if isinstance(output_file, TextIOBase):
+    try:
         json.dump(dict_qubo, output_file)
-    else:
-        with open(output_file, 'w') as f:
-            json.dump(dict_qubo, f)
+    except AttributeError:
+        with open(output_file, "w") as output_file:
+            json.dump(dict_qubo, output_file)
