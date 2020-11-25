@@ -34,13 +34,11 @@ def bqm_to_serializable(bqm: dimod.BinaryQuadraticModel) -> Dict[str, Any]:
             for (label_1, label_2), coef in bqm.quadratic.items()
         ],
         "offset": bqm.offset,
-        "vartype": bqm.vartype.name
+        "vartype": bqm.vartype.name,
     }
 
 
-def bqm_from_serializable(
-    serializable: Dict[str, Any]
-) -> dimod.BinaryQuadraticModel:
+def bqm_from_serializable(serializable: Dict[str, Any]) -> dimod.BinaryQuadraticModel:
     """Create a binary quadratic model from serializable dictionary.
 
     Args:
@@ -55,7 +53,7 @@ def bqm_from_serializable(
         {i: coef for i, coef in serializable["linear"]},
         {(i, j): coef for i, j, coef in serializable["quadratic"]},
         serializable["offset"],
-        vartype=serializable["vartype"]
+        vartype=serializable["vartype"],
     )
 
 
@@ -63,7 +61,7 @@ def load_qubo(input_file: Union[TextIOBase, IO[str], str, PathLike]):
     try:
         qubo_dict = json.load(input_file)
     except AttributeError:
-        with open(input_file, 'r') as input_file:
+        with open(input_file, "r") as input_file:
             qubo_dict = json.load(input_file)
 
     del qubo_dict["schema"]
