@@ -1,5 +1,5 @@
 import dimod
 
 
-class BQMSamplerTests(dimod.Sampler):
+class BQMSolverTests(dimod.Sampler):
     pass

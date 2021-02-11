@@ -69,11 +69,32 @@ def load_qubo(input_file: Union[TextIOBase, IO[str], str, PathLike]):
 
 
 def save_qubo(qubo, output_file: Union[TextIOBase, IO[str], str, PathLike]):
-    dict_qubo = bqm_to_serializable(qubo)
-    dict_qubo["schema"] = SCHEMA_VERSION + "-qubo"
+    qubo_dict = bqm_to_serializable(qubo)
+    qubo_dict["schema"] = SCHEMA_VERSION + "-qubo"
 
     try:
-        json.dump(dict_qubo, output_file)
+        json.dump(qubo_dict, output_file)
     except AttributeError:
         with open(output_file, "w") as output_file:
-            json.dump(dict_qubo, output_file)
+            json.dump(qubo_dict, output_file)
+
+
+def save_sampleset(sampleset, output_file: Union[TextIOBase, IO[str], str, PathLike]):
+    sampleset_dict = sampleset.to_serializable()
+    sampleset_dict["schema"] = SCHEMA_VERSION + "-sample-set"
+    try:
+        json.dump(sampleset_dict, output_file)
+    except AttributeError:
+        with open(output_file, "w") as output_file:
+            json.dump(sampleset_dict, output_file)
+
+
+def load_sampleset(input_file: Union[TextIOBase, IO[str], str, PathLike]):
+    try:
+        sampleset_dict = json.load(input_file)
+    except AttributeError:
+        with open(input_file, "r") as input_file:
+            sampleset_dict = json.load(input_file)
+
+    del sampleset_dict["schema"]
+    return dimod.SampleSet.from_serializable(sampleset_dict)
