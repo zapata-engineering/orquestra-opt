@@ -117,3 +117,4 @@ def convert_measurements_to_sampleset(
     if bqm.vartype != dimod.BINARY:
         raise TypeError("BQM needs to have vartype BINARY")
     return SampleSet.from_samples_bqm(measurements.bitstrings, bqm)
+
