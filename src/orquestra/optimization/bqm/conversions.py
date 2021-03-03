@@ -134,16 +134,16 @@ def convert_measurements_to_sampleset(
     Returns:
         SampleSet object
     """
-    if not bqm:
-        return SampleSet.from_samples(
-            measurements.bitstrings, "BINARY", [np.nan for _ in measurements.bitstrings]
-        )
-    if bqm.vartype != dimod.BINARY:
-        raise TypeError("BQM needs to have vartype BINARY")
-
     bitstrings = [
         tuple(int(change_bitstring_convention != bit) for bit in bitstring)
         for bitstring in measurements.bitstrings
     ]
+
+    if not bqm:
+        return SampleSet.from_samples(
+            bitstrings, "BINARY", [np.nan for _ in bitstrings]
+        )
+    if bqm.vartype != dimod.BINARY:
+        raise TypeError("BQM needs to have vartype BINARY")
 
     return SampleSet.from_samples_bqm(bitstrings, bqm)
