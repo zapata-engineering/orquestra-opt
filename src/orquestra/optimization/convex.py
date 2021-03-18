@@ -90,7 +90,8 @@ def solve_qp_problem_with_optimizer(
             final_value = optimization_results.opt_value
             final_params = optimization_results.opt_params
 
-    return final_params, final_value
+    # We round the values to avoid having values like 1.0000000002 or -1e-14 in the output
+    return np.around(final_params, decimals=8), final_value
 
 
 def is_matrix_semi_positive_definite(matrix: np.ndarray) -> bool:
