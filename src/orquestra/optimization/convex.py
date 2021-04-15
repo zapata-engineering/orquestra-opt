@@ -1,19 +1,19 @@
 import dimod
 import numpy as np
 import cvxpy as cp
-from typing import Optional
+from typing import Tuple
 from scipy.optimize import LinearConstraint
 
 from zquantum.core.interfaces.optimizer import Optimizer
 
 
-def solve_qp_problem_for_spd_matrix(
+def solve_qp_problem_for_psd_matrix(
     matrix: np.ndarray, symmetrize: bool = True
-) -> (np.ndarray, float):
+) -> Tuple[np.ndarray, float]:
     """
-    Solves a quadratic programming (QP) optimization problem. The matrix should be semipositive definite.
+    Solves a quadratic programming (QP) optimization problem. The matrix should be positive semi-definite.
     This implementation assumes that the domain of the solution are variables between 0 and 1.
-    If matrix is not semipositive definite, `solve_qp_problem_with_optimizer` method should be used.
+    If matrix is not positive semi-definite, `solve_qp_problem_with_optimizer` method should be used.
 
     Notes:
         We are aware of the fact that in the specified domain the solution is always a vector of zeros, but decided to
@@ -30,8 +30,8 @@ def solve_qp_problem_for_spd_matrix(
     if symmetrize:
         matrix = (matrix + matrix.T) / 2
 
-    if not is_matrix_semi_positive_definite(matrix):
-        raise ValueError("Input matrix should be semi positive definite.")
+    if not is_matrix_positive_semidefinite(matrix):
+        raise ValueError("Input matrix should be positive semi-definite.")
 
     size = matrix.shape[0]
     P = matrix
@@ -50,7 +50,7 @@ def solve_qp_problem_with_optimizer(
     optimizer: Optimizer,
     number_of_trials: int = 1,
     symmetrize: bool = True,
-) -> (np.ndarray, float):
+) -> Tuple[np.ndarray, float]:
     """
     Solves a quadratic programming (QP) optimization problem.
     This implementation assumes that the domain of the solution are variables between 0 and 1.
@@ -94,15 +94,15 @@ def solve_qp_problem_with_optimizer(
     return np.around(final_params, decimals=8), final_value
 
 
-def is_matrix_semi_positive_definite(matrix: np.ndarray) -> bool:
+def is_matrix_positive_semidefinite(matrix: np.ndarray) -> bool:
     """
-    Checks whether matrix is semi positive definite.
+    Checks whether matrix is positive semi-definite.
 
     Args:
         matrix: a matrix that should be checked.
 
     Returns:
-        bool: True if matrix is SPD, False otherwise.
+        bool: True if matrix is positive semi-definite, False otherwise.
 
     """
     eigenvalues, _ = np.linalg.eig(matrix)
