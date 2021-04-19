@@ -10,6 +10,12 @@ from zquantum.core.measurement import Measurements
 def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperator:
     """Converts dimod BinaryQuadraticModel to OpenFermion IsingOperator object.
 
+    The resulting Openfermion IsingOperator has the following property:
+    For every bitstring, its expected value is the same as the energy of the original QUBO.
+    In order to ensure this, we had to add a minus sign for the coefficients
+    of the linear terms coming from dimod conversion.
+    For more context about conventions used please refer to note in `convert_measurements_to_sampleset` docstring.
+
     Args:
         qubo: Object we want to convert
 
@@ -22,7 +28,7 @@ def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperat
     list_of_ising_strings = [f"{offset}[]"]
 
     for i, value in linear_coeffs.items():
-        list_of_ising_strings.append(f"{value}[Z{i}]")
+        list_of_ising_strings.append(f"{-value}[Z{i}]")
 
     for (i, j), value in quadratic_coeffs.items():
         list_of_ising_strings.append(f"{value}[Z{i} Z{j}]")
@@ -33,8 +39,13 @@ def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperat
 
 def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadraticModel:
     """
-    Converts dimod BinaryQuadraticModel to OpenFermion IsingOperator object.
-    NOTE: The conversion might not be 100% accurate due to performing floating point operations during conversion between Ising and QUBO models.
+    Converts dimod Openfermion IsingOperator to BinaryQuadraticModel object.
+    The resulting QUBO has the following property:
+    For every bitstring, its energy is the same as the expected value of the original Ising Hamiltonian.
+    For more context about conventions used please refer to note in `convert_measurements_to_sampleset` docstring.
+
+    Note:
+        The conversion might not be 100% accurate due to performing floating point operations during conversion between Ising and QUBO models.
 
     Args:
         operator: IsingOperator we want to convert
@@ -54,7 +65,7 @@ def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadrati
         if len(term) == 0:
             offset = coeff
         if len(term) == 1:
-            linear_terms[term[0][0]] = coeff
+            linear_terms[term[0][0]] = -coeff
         if len(term) == 2:
             quadratic_terms[(term[0][0], term[1][0])] = coeff
         if len(term) > 2:
@@ -118,15 +129,12 @@ def convert_measurements_to_sampleset(
         However, there is another convention, used in dimod, where the mapping is 0 -> -1 and 1 -> 1 instead.
         Therefore if we try to use the bitstrings coming from solving the problem framed in one convention
         to evaluate energy for problem state in the second one, the results will be incorrect.
-        This might happen in the following scenario:
-        1. Create a qubo
-        2. Solve qubo using dimod solver
-        3. Transform qubo to Ising problem
-        4. Solve Ising problem using QAOA
-        The bitstring coming from steps 2 and 4 will be flipped – 0s and 1s will be exchanged.
-        First convention is the one used in `Measurements` in `zquantum.core` and the second one
-        is used in `SampleSet` in `dimod`. In order to flip the bits in bitstrings, one should use `change_bitstring_convention` flag.
-
+        This can be fixed with changing the value of `change_bitstring_convention` flag.
+        Currently we changed the conventions appropriately in `convert_qubo_to_openfermion_ising` and `convert_openfermion_ising_to_qubo`,
+        however, this still might be an issue in cases where qubo/Ising representation is created
+        using different tools.
+        It's hard to envision a specific example at the time of writing, but experience shows that
+        it needs to be handled with caution.
     Args:
         measurements: Measurements object to be converted
         bqm: if provided, SampleSet will include energy values for each sample.

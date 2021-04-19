@@ -1,6 +1,6 @@
+from openfermion.ops.operators.ising_operator import IsingOperator
 import pytest
 import numpy as np
-from openfermion import IsingOperator
 import dimod
 
 from zquantum.qubo.conversions import (
@@ -12,7 +12,7 @@ from zquantum.qubo.conversions import (
 from zquantum.core.measurement import Measurements
 
 
-def test_qubo_with_binary_fractions():
+def test_qubo_conversion_with_binary_fractions():
     qubo = dimod.BinaryQuadraticModel(
         {0: 1, 1: 2, 2: 3},
         {(1, 2): 0.5, (1, 0): -0.25, (0, 2): 2.125},
@@ -24,7 +24,7 @@ def test_qubo_with_binary_fractions():
     assert qubo == new_qubo
 
 
-def test_qubo_with_non_binary_fractions():
+def test_qubo_conversion_with_non_binary_fractions():
     qubo = dimod.BinaryQuadraticModel(
         {0: 1.01, 1: -2.03, 2: 3},
         {(1, 2): 0.51, (1, 0): -0.9, (0, 2): 2.125},
@@ -45,6 +45,62 @@ def test_qubo_with_non_binary_fractions():
 
     for key in qubo.quadratic.keys():
         assert np.isclose(qubo.quadratic[key], new_qubo.quadratic[key])
+
+
+def test_converted_ising_evaluates_to_the_same_energy_as_original_qubo():
+    qubo = dimod.BinaryQuadraticModel(
+        {0: 1, 1: 2, 2: 3},
+        {
+            (0, 1): 1,
+            (0, 2): 0.5,
+            (1, 2): 0.5,
+        },
+        -1,
+        vartype=dimod.BINARY,
+    )
+    all_solutions = [
+        [0, 0, 0],
+        [0, 0, 1],
+        [0, 1, 0],
+        [0, 1, 1],
+        [1, 0, 0],
+        [1, 0, 1],
+        [1, 1, 0],
+        [1, 1, 1],
+    ]
+
+    ising = convert_qubo_to_openfermion_ising(qubo)
+    for solution in all_solutions:
+        qubo_energy = qubo.energy(solution)
+        ising_energy = np.sum(
+            Measurements([solution]).get_expectation_values(ising).values
+        )
+        assert qubo_energy == ising_energy
+
+
+def test_converted_qubo_evaluates_to_the_same_energy_as_original_ising():
+    ising = IsingOperator(
+        "2.5 [] + [Z0] + 2[Z0 Z1] +0.5[Z0 Z2] +[Z1] + 0.75[Z1 Z2] -[Z2]"
+    )
+
+    all_solutions = [
+        [0, 0, 0],
+        [0, 0, 1],
+        [0, 1, 0],
+        [0, 1, 1],
+        [1, 0, 0],
+        [1, 0, 1],
+        [1, 1, 0],
+        [1, 1, 1],
+    ]
+
+    qubo = convert_openfermion_ising_to_qubo(ising)
+    for solution in all_solutions:
+        qubo_energy = qubo.energy(solution)
+        ising_energy = np.sum(
+            Measurements([solution]).get_expectation_values(ising).values
+        )
+        assert qubo_energy == ising_energy
 
 
 def test_convert_sampleset_to_measurements():
