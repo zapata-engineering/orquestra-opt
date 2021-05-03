@@ -147,6 +147,24 @@ def test_loading_saved_qubo_gives_the_same_qubo():
     assert qubo == new_qubo
 
 
+def test_loading_qubo_with_complex_variables():
+    qubo = dimod.BinaryQuadraticModel(
+        {(0, 0): 1, (1, 0): -1, (2, 0): 0.5},
+        {((0, 0), (1, 0)): 0.5, ((1, 0), (2, 0)): 1.5},
+        42,
+        vartype="SPIN",
+    )
+
+    output_file = StringIO()
+
+    save_qubo(qubo, output_file)
+    # Move to the beginning of the file
+    output_file.seek(0)
+    new_qubo = load_qubo(output_file)
+
+    assert qubo == new_qubo
+
+
 def test_loading_saved_sampleset_gives_the_same_sampleset():
     sampleset = dimod.SampleSet.from_samples(np.ones(5, dtype="int8"), "BINARY", 0)
 
