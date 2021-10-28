@@ -49,7 +49,10 @@ def bqm_from_serializable(serializable: Dict[str, Any]) -> dimod.BinaryQuadratic
     Returns:
         Binary quadratic model converted from the input dictionary.
     """
-    ensure_hashable = lambda i: tuple(i) if isinstance(i, list) else i
+
+    def ensure_hashable(i):
+        return tuple(i) if isinstance(i, list) else i
+
     return dimod.BinaryQuadraticModel(
         {ensure_hashable(i): coef for i, coef in serializable["linear"]},
         {

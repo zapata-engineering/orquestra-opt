@@ -47,7 +47,7 @@ def test_solve_qp_problem_with_optimizer(matrix, optimizer):
 
 
 @pytest.mark.parametrize("matrix", [psd_matrix()])
-def test_solve_qp_problem_with_optimizer_throws_error_when_optimizer_does_not_support_constraints(
+def test_solve_qp_problem_with_optimizer_throws_error_when_optimizer_does_not_support_constraints(  # noqa:E501
     matrix,
 ):
     optimizer = MockOptimizer()

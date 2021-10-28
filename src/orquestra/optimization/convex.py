@@ -11,13 +11,15 @@ def solve_qp_problem_for_psd_matrix(
     matrix: np.ndarray, symmetrize: bool = True
 ) -> Tuple[np.ndarray, float]:
     """
-    Solves a quadratic programming (QP) optimization problem. The matrix should be positive semi-definite.
-    This implementation assumes that the domain of the solution are variables between 0 and 1.
-    If matrix is not positive semi-definite, `solve_qp_problem_with_optimizer` method should be used.
+    Solves a quadratic programming (QP) optimization problem. The matrix should
+    be positive semi-definite. This implementation assumes that the domain of
+    the solution are variables between 0 and 1. If matrix is not positive
+    semi-definite, `solve_qp_problem_with_optimizer` method should be used.
 
     Notes:
-        We are aware of the fact that in the specified domain the solution is always a vector of zeros, but decided to
-        leave the implementation as it is in case the domain changes in future.
+        We are aware of the fact that in the specified domain the solution is
+        always a vector of zeros, but decided to leave the implementation as it is
+        in case the domain changes in future.
 
     Args:
         matrix: a matrix representing the problem.
@@ -53,12 +55,15 @@ def solve_qp_problem_with_optimizer(
 ) -> Tuple[np.ndarray, float]:
     """
     Solves a quadratic programming (QP) optimization problem.
-    This implementation assumes that the domain of the solution are variables between 0 and 1.
+    This implementation assumes that the domain of the solution are variables
+    between 0 and 1.
 
     Args:
         matrix: a matrix representing the problem.
-        optimizer: an optimizer to be used to solve the problem. Optimizer should support constraints.
-        number_of_trials: specifies the number of times problem will be solved. Only the best solution will be returned.
+        optimizer: an optimizer to be used to solve the problem. Optimizer should
+            support constraints.
+        number_of_trials: specifies the number of times problem will be solved.
+            Only the best solution will be returned.
         symmetrize: a flag indicating whether the matrix should be symmetrized.
 
     Returns:
@@ -79,7 +84,9 @@ def solve_qp_problem_with_optimizer(
 
     optimizer.constraints = linear_constraint
 
-    cost_function = lambda x: x.T @ matrix @ x
+    def cost_function(x):
+        return x.T @ matrix @ x
+
     final_value = None
     final_params = None
 
@@ -90,7 +97,8 @@ def solve_qp_problem_with_optimizer(
             final_value = optimization_results.opt_value
             final_params = optimization_results.opt_params
 
-    # We round the values to avoid having values like 1.0000000002 or -1e-14 in the output
+    # We round the values to avoid having values like 1.0000000002 or -1e-14
+    # in the output
     return np.around(final_params, decimals=8), final_value
 
 

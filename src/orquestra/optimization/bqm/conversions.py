@@ -10,11 +10,12 @@ from zquantum.core.measurement import Measurements
 def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperator:
     """Converts dimod BinaryQuadraticModel to OpenFermion IsingOperator object.
 
-    The resulting Openfermion IsingOperator has the following property:
-    For every bitstring, its expected value is the same as the energy of the original QUBO.
+    The resulting Openfermion IsingOperator has the following property: for every
+    bitstring, its expected value is the same as the energy of the original QUBO.
     In order to ensure this, we had to add a minus sign for the coefficients
     of the linear terms coming from dimod conversion.
-    For more context about conventions used please refer to note in `convert_measurements_to_sampleset` docstring.
+    For more context about conventions used please refer to note in
+    `convert_measurements_to_sampleset` docstring.
 
     Args:
         qubo: Object we want to convert
@@ -41,11 +42,13 @@ def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadrati
     """
     Converts dimod Openfermion IsingOperator to BinaryQuadraticModel object.
     The resulting QUBO has the following property:
-    For every bitstring, its energy is the same as the expected value of the original Ising Hamiltonian.
-    For more context about conventions used please refer to note in `convert_measurements_to_sampleset` docstring.
+    For every bitstring, its energy is the same as the expected value of the original
+    Ising Hamiltonian. For more context about conventions used please refer to note in
+    `convert_measurements_to_sampleset` docstring.
 
     Note:
-        The conversion might not be 100% accurate due to performing floating point operations during conversion between Ising and QUBO models.
+        The conversion might not be 100% accurate due to performing floating point
+        operations during conversion between Ising and QUBO models.
 
     Args:
         operator: IsingOperator we want to convert
@@ -85,17 +88,19 @@ def convert_sampleset_to_measurements(
 ) -> Measurements:
     """
     Converts dimod SampleSet to zquantum.core Measurements.
-    Works only for the sampleset with "BINARY" vartype and variables being range of integers starting from 0.
+    Works only for the sampleset with "BINARY" vartype and variables being range of
+    integers starting from 0.
 
     Note:
-        Since Measurements doesn't hold information about the energy of the samples, this conversion is lossy.
-        For more explanation regarding change_bitstring_convention please read docs of `convert_measurements_to_sampleset`.
+        Since Measurements doesn't hold information about the energy of the samples,
+        this conversion is lossy. For more explanation regarding
+        change_bitstring_convention please read docs of
+        `convert_measurements_to_sampleset`.
 
     Args:
         sampleset: SampleSet we want to convert
-        change_bitstring_convention: whether to flip the bits in bitstrings to, depends on the convention one is using (see note).
-    Returns:
-        Measurements object
+        change_bitstring_convention: whether to flip the bits in bitstrings to, depends
+        on the convention one is using (see note).
 
     """
     if sampleset.vartype != dimod.BINARY:
@@ -120,25 +125,28 @@ def convert_measurements_to_sampleset(
 ) -> SampleSet:
     """
     Converts dimod SampleSet to zquantum.core Measurements.
-    If no bqm is specified, the vartype of the SampleSet will be "BINARY" and the energies will be NaN.
-    If bqm is specified, its vartype will be preserved and the energy values will be calculated.
+    If no bqm is specified, the vartype of the SampleSet will be "BINARY" and the
+    energies will be NaN. If bqm is specified, its vartype will be preserved and
+    the energy values will be calculated.
 
     Note:
-        The convention commonly used in quantum computing is that 0 in a bitstring represents eigenvalue 1 of an Ising Hamiltonian,
-        and 1 represents eigenvalue -1.
-        However, there is another convention, used in dimod, where the mapping is 0 -> -1 and 1 -> 1 instead.
-        Therefore if we try to use the bitstrings coming from solving the problem framed in one convention
-        to evaluate energy for problem state in the second one, the results will be incorrect.
-        This can be fixed with changing the value of `change_bitstring_convention` flag.
-        Currently we changed the conventions appropriately in `convert_qubo_to_openfermion_ising` and `convert_openfermion_ising_to_qubo`,
-        however, this still might be an issue in cases where qubo/Ising representation is created
-        using different tools.
-        It's hard to envision a specific example at the time of writing, but experience shows that
-        it needs to be handled with caution.
+        The convention commonly used in quantum computing is that 0 in a bitstring
+        represents eigenvalue 1 of an Ising Hamiltonian,and 1 represents eigenvalue -1.
+        However, there is another convention, used in dimod, where the mapping is
+        0 -> -1 and 1 -> 1 instead. Therefore if we try to use the bitstrings coming
+        from solving the problem framed in one convention to evaluate energy for
+        problem state in the second one, the results will be incorrect. This can be
+        fixed with changing the value of `change_bitstring_convention` flag. Currently
+        we changed the conventions appropriately in `convert_qubo_to_openfermion_ising`
+        and `convert_openfermion_ising_to_qubo`, however, this still might be an issue
+        in cases where qubo/Ising representation is created using different tools.
+        It's hard to envision a specific example at the time of writing, but experience
+        shows that it needs to be handled with caution.
     Args:
         measurements: Measurements object to be converted
         bqm: if provided, SampleSet will include energy values for each sample.
-        change_bitstring_convention: whether to flip the bits in bitstrings to, depends on the convention one is using (see note).
+        change_bitstring_convention: whether to flip the bits in bitstrings to, depends
+            on the convention one is using (see note).
     Returns:
         SampleSet object
     """
