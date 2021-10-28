@@ -96,7 +96,8 @@ def solve_qp_problem_with_optimizer(
         if final_value is None or optimization_results.opt_value < final_value:
             final_value = optimization_results.opt_value
             final_params = optimization_results.opt_params
-
+    assert final_value is not None
+    assert final_params is not None
     # We round the values to avoid having values like 1.0000000002 or -1e-14
     # in the output
     return np.around(final_params, decimals=8), final_value
