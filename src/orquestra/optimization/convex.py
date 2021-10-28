@@ -1,9 +1,9 @@
+from typing import Tuple
+
+import cvxpy as cp
 import dimod
 import numpy as np
-import cvxpy as cp
-from typing import Tuple
 from scipy.optimize import LinearConstraint
-
 from zquantum.core.interfaces.optimizer import Optimizer
 
 

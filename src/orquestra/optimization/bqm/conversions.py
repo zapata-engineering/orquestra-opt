@@ -1,9 +1,9 @@
-import numpy as np
-from openfermion import IsingOperator
-import dimod
-from dimod import BinaryQuadraticModel, SampleSet
 from typing import Optional
 
+import dimod
+import numpy as np
+from dimod import BinaryQuadraticModel, SampleSet
+from openfermion import IsingOperator
 from zquantum.core.measurement import Measurements
 
 

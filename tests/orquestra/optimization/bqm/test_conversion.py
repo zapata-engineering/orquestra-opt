@@ -1,15 +1,14 @@
-from openfermion.ops.operators.ising_operator import IsingOperator
-import pytest
-import numpy as np
 import dimod
-
-from zquantum.qubo.conversions import (
-    convert_qubo_to_openfermion_ising,
-    convert_openfermion_ising_to_qubo,
-    convert_sampleset_to_measurements,
-    convert_measurements_to_sampleset,
-)
+import numpy as np
+import pytest
+from openfermion.ops.operators.ising_operator import IsingOperator
 from zquantum.core.measurement import Measurements
+from zquantum.qubo.conversions import (
+    convert_measurements_to_sampleset,
+    convert_openfermion_ising_to_qubo,
+    convert_qubo_to_openfermion_ising,
+    convert_sampleset_to_measurements,
+)
 
 
 def test_qubo_conversion_with_binary_fractions():

@@ -1,11 +1,11 @@
+import json
+from io import TextIOBase
 from os import PathLike
-from typing import Dict, Any, IO, Union
+from typing import IO, Any, Dict, Union
 
 import dimod
-from zquantum.core.utils import SCHEMA_VERSION
 from zquantum.core.typing import DumpTarget, LoadSource
-from io import TextIOBase
-import json
+from zquantum.core.utils import SCHEMA_VERSION
 
 
 def bqm_to_serializable(bqm: dimod.BinaryQuadraticModel) -> Dict[str, Any]:

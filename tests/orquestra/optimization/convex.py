@@ -1,10 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 from zquantum.core.interfaces.mock_objects import MockOptimizer
 from zquantum.qubo.convex_opt import (
+    is_matrix_positive_semidefinite,
     solve_qp_problem_for_psd_matrix,
     solve_qp_problem_with_optimizer,
-    is_matrix_positive_semidefinite,
 )
 
 
