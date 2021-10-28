@@ -1,10 +1,11 @@
+import json
+from io import TextIOBase
 from os import PathLike
-from typing import Dict, Any, IO, Union
+from typing import IO, Any, Dict, Union
 
 import dimod
+from zquantum.core.typing import DumpTarget, LoadSource
 from zquantum.core.utils import SCHEMA_VERSION
-from io import TextIOBase
-import json
 
 
 def bqm_to_serializable(bqm: dimod.BinaryQuadraticModel) -> Dict[str, Any]:
@@ -49,7 +50,10 @@ def bqm_from_serializable(serializable: Dict[str, Any]) -> dimod.BinaryQuadratic
     Returns:
         Binary quadratic model converted from the input dictionary.
     """
-    ensure_hashable = lambda i: tuple(i) if isinstance(i, list) else i
+
+    def ensure_hashable(i):
+        return tuple(i) if isinstance(i, list) else i
+
     return dimod.BinaryQuadraticModel(
         {ensure_hashable(i): coef for i, coef in serializable["linear"]},
         {
@@ -61,7 +65,7 @@ def bqm_from_serializable(serializable: Dict[str, Any]) -> dimod.BinaryQuadratic
     )
 
 
-def load_qubo(input_file: Union[TextIOBase, IO[str], str, PathLike]):
+def load_qubo(input_file: LoadSource):
     try:
         qubo_dict = json.load(input_file)
     except AttributeError:
@@ -72,7 +76,7 @@ def load_qubo(input_file: Union[TextIOBase, IO[str], str, PathLike]):
     return bqm_from_serializable(qubo_dict)
 
 
-def save_qubo(qubo, output_file: Union[TextIOBase, IO[str], str, PathLike]):
+def save_qubo(qubo, output_file: DumpTarget):
     qubo_dict = bqm_to_serializable(qubo)
     qubo_dict["schema"] = SCHEMA_VERSION + "-qubo"
 
@@ -83,7 +87,7 @@ def save_qubo(qubo, output_file: Union[TextIOBase, IO[str], str, PathLike]):
             json.dump(qubo_dict, output_file)
 
 
-def save_sampleset(sampleset, output_file: Union[TextIOBase, IO[str], str, PathLike]):
+def save_sampleset(sampleset, output_file: DumpTarget):
     sampleset_dict = sampleset.to_serializable()
     sampleset_dict["schema"] = SCHEMA_VERSION + "-sample-set"
     try:
@@ -93,7 +97,7 @@ def save_sampleset(sampleset, output_file: Union[TextIOBase, IO[str], str, PathL
             json.dump(sampleset_dict, output_file)
 
 
-def load_sampleset(input_file: Union[TextIOBase, IO[str], str, PathLike]):
+def load_sampleset(input_file: LoadSource):
     try:
         sampleset_dict = json.load(input_file)
     except AttributeError:

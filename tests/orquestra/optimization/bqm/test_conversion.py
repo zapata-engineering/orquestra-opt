@@ -1,15 +1,14 @@
-from openfermion.ops.operators.ising_operator import IsingOperator
-import pytest
-import numpy as np
 import dimod
-
-from zquantum.qubo.conversions import (
-    convert_qubo_to_openfermion_ising,
-    convert_openfermion_ising_to_qubo,
-    convert_sampleset_to_measurements,
-    convert_measurements_to_sampleset,
-)
+import numpy as np
+import pytest
+from openfermion.ops.operators.ising_operator import IsingOperator
 from zquantum.core.measurement import Measurements
+from zquantum.qubo.conversions import (
+    convert_measurements_to_sampleset,
+    convert_openfermion_ising_to_qubo,
+    convert_qubo_to_openfermion_ising,
+    convert_sampleset_to_measurements,
+)
 
 
 def test_qubo_conversion_with_binary_fractions():
@@ -165,7 +164,7 @@ def test_convert_sampleset_to_measurements_fails_for_non_binary_vartype():
     energies = [0 for _ in range(len(bitstrings))]
     sampleset = dimod.SampleSet.from_samples(bitstrings, dimod.SPIN, energies)
     with pytest.raises(Exception):
-        converted_measurements = convert_sampleset_to_measurements(sampleset)
+        _ = convert_sampleset_to_measurements(sampleset)
 
 
 def test_convert_sampleset_to_measurements_fails_for_non_int_variables():
@@ -176,7 +175,7 @@ def test_convert_sampleset_to_measurements_fails_for_non_int_variables():
     sampleset = dimod.SampleSet.from_samples(bitstrings, dimod.SPIN, energies)
     sampleset = sampleset.relabel_variables({0: 0.0, 1: 0.1, 2: 0.2})
     with pytest.raises(Exception):
-        converted_measurements = convert_sampleset_to_measurements(sampleset)
+        _ = convert_sampleset_to_measurements(sampleset)
 
 
 def test_convert_sampleset_to_measurements_fails_for_variables_from_wrong_range():
@@ -187,7 +186,7 @@ def test_convert_sampleset_to_measurements_fails_for_variables_from_wrong_range(
     sampleset = dimod.SampleSet.from_samples(bitstrings, dimod.SPIN, energies)
     sampleset = sampleset.relabel_variables({0: 1, 1: 2, 2: 3})
     with pytest.raises(Exception):
-        converted_measurements = convert_sampleset_to_measurements(sampleset)
+        _ = convert_sampleset_to_measurements(sampleset)
 
 
 def test_convert_measurements_to_sampleset_without_qubo():
