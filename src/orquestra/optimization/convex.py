@@ -1,9 +1,9 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import cvxpy as cp
-import dimod
 import numpy as np
 from scipy.optimize import LinearConstraint
+from typing_extensions import Protocol, runtime_checkable
 from zquantum.core.interfaces.optimizer import Optimizer
 
 
@@ -74,7 +74,7 @@ def solve_qp_problem_with_optimizer(
         matrix = (matrix + matrix.T) / 2
 
     # Use an optimizer to solve non-convex QP relaxations
-    if not hasattr(optimizer, "constraints"):
+    if not isinstance(optimizer, _WithConstraints):
         raise ValueError("Optimizer needs to support constraints.")
     size = matrix.shape[0]
     A = np.eye(size)
@@ -116,3 +116,11 @@ def is_matrix_positive_semidefinite(matrix: np.ndarray) -> bool:
     """
     eigenvalues, _ = np.linalg.eig(matrix)
     return np.min(eigenvalues) >= 0
+
+
+# Temporary solution until constraints added to optimizer.py in z-quantum-core
+@runtime_checkable
+class _WithConstraints(Protocol):
+    """Minimum interface for Optimizers with constraints"""
+
+    constraints: Optional[LinearConstraint]

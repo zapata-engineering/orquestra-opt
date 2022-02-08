@@ -4,7 +4,9 @@ from os import PathLike
 from typing import IO, Any, Dict, Union
 
 import dimod
-from zquantum.core.typing import DumpTarget, LoadSource
+from sympy import inverse_sine_transform
+from zquantum.core.serialization import ensure_open
+from zquantum.core.typing import DumpTarget, LoadSource, Readable
 from zquantum.core.utils import SCHEMA_VERSION
 
 
@@ -66,11 +68,9 @@ def bqm_from_serializable(serializable: Dict[str, Any]) -> dimod.BinaryQuadratic
 
 
 def load_qubo(input_file: LoadSource):
-    try:
-        qubo_dict = json.load(input_file)
-    except AttributeError:
-        with open(input_file, "r") as input_file:
-            qubo_dict = json.load(input_file)
+
+    with ensure_open(input_file, "r") as f:
+        qubo_dict = json.load(f)
 
     del qubo_dict["schema"]
     return bqm_from_serializable(qubo_dict)
@@ -80,29 +80,22 @@ def save_qubo(qubo, output_file: DumpTarget):
     qubo_dict = bqm_to_serializable(qubo)
     qubo_dict["schema"] = SCHEMA_VERSION + "-qubo"
 
-    try:
-        json.dump(qubo_dict, output_file)
-    except AttributeError:
-        with open(output_file, "w") as output_file:
-            json.dump(qubo_dict, output_file)
+    with ensure_open(output_file, "w") as f:
+        json.dump(qubo_dict, f)
 
 
 def save_sampleset(sampleset, output_file: DumpTarget):
     sampleset_dict = sampleset.to_serializable()
     sampleset_dict["schema"] = SCHEMA_VERSION + "-sample-set"
-    try:
-        json.dump(sampleset_dict, output_file)
-    except AttributeError:
-        with open(output_file, "w") as output_file:
-            json.dump(sampleset_dict, output_file)
+
+    with ensure_open(output_file, "w") as f:
+        json.dump(sampleset_dict, f)
 
 
 def load_sampleset(input_file: LoadSource):
-    try:
-        sampleset_dict = json.load(input_file)
-    except AttributeError:
-        with open(input_file, "r") as input_file:
-            sampleset_dict = json.load(input_file)
+
+    with ensure_open(input_file, "r") as f:
+        sampleset_dict = json.load(f)
 
     del sampleset_dict["schema"]
     return dimod.SampleSet.from_serializable(sampleset_dict)
