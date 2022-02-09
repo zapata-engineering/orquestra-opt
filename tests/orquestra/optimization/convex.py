@@ -2,16 +2,20 @@ import numpy as np
 import pytest
 from zquantum.core.interfaces.mock_objects import MockOptimizer
 from zquantum.qubo.convex_opt import (
+    _WithConstraints,
     is_matrix_positive_semidefinite,
     solve_qp_problem_for_psd_matrix,
     solve_qp_problem_with_optimizer,
 )
 
 
+class MockConstrainedOptimizer(MockOptimizer):
+    constraints = None
+
+
 @pytest.fixture
 def optimizer():
-    optimizer = MockOptimizer()
-    optimizer.constraints = None
+    optimizer = MockConstrainedOptimizer()
     return optimizer
 
 
