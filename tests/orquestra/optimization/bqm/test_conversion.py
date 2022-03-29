@@ -1,7 +1,7 @@
 import dimod
 import numpy as np
 import pytest
-from openfermion.ops.operators.ising_operator import IsingOperator
+from zquantum.core.openfermion.ops.operators.ising_operator import IsingOperator
 from zquantum.core.measurement import Measurements
 from zquantum.qubo.conversions import (
     convert_measurements_to_sampleset,
