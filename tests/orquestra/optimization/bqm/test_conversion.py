@@ -9,7 +9,7 @@ from zquantum.qubo.conversions import (
     convert_sampleset_to_measurements,
 )
 
-from zquantum.core.measurement import Measurements # isort: skip
+from zquantum.core.measurement import Measurements  # isort: skip
 
 
 def test_qubo_conversion_with_binary_fractions():
