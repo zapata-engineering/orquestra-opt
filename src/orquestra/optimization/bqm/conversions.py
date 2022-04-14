@@ -3,8 +3,8 @@ from typing import Optional
 import dimod
 import numpy as np
 from dimod import BinaryQuadraticModel, SampleSet
-from openfermion import IsingOperator
 from zquantum.core.measurement import Measurements
+from zquantum.core.openfermion import IsingOperator
 
 
 def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperator:
@@ -79,7 +79,7 @@ def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadrati
     dimod_ising = BinaryQuadraticModel(
         linear_terms, quadratic_terms, offset, vartype="SPIN"
     )
-    return dimod_ising.change_vartype("BINARY", inplace=False)
+    return dimod_ising.change_vartype(dimod.Vartype.BINARY, inplace=False)
 
 
 def convert_sampleset_to_measurements(
