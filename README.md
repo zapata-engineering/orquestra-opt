@@ -1,5 +1,5 @@
 # orquestra-python-template
-This is a tempalte repository for Orquestra Python projects.
+This is a template repository for Orquestra Python projects.
 
 After creating repository from this template, make sure to follow the steps below:
 
