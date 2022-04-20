@@ -3,7 +3,7 @@ This is a template repository for Orquestra Python projects.
 
 After creating repository from this template, make sure to follow the steps below:
 
-1. Verify license. This repository uses Apache 2.0 license as an example. Substitute LICENSE file and license entry in `setup.cfg` accordingly.
+1. Specify license. Supply LICENSE file and fill license entry in `setup.cfg` accordingly.
 2. Update `setup.cfg`. At the very least update the following fields:
    - `[metadata]` section: `name`, `description`, `license`, `license_file`, 
    - `install_requires` in `[options]` section. You don't have to do this at the very beginning and you may add requirements as you go, but be warry that the ones present in this repository are only example ones and may not be applicable to your project.
