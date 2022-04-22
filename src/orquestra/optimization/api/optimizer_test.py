@@ -5,16 +5,14 @@ You need to define your own test cases that inherit from the ones defined here.
 """
 
 
-from typing import Callable, Union
+from typing import Callable
 
 import numpy as np
 import pytest
-from zquantum.core.interfaces.cost_function import CostFunction
-from zquantum.core.interfaces.functions import FunctionWithGradient
-from zquantum.core.interfaces.optimizer import NestedOptimizer, Optimizer
 
 from ..gradients import finite_differences_gradient
-from ..history.recorder import recorder
+from ..history import recorder
+from . import CostFunction, FunctionWithGradient, NestedOptimizer, Optimizer
 
 MANDATORY_OPTIMIZATION_RESULT_FIELDS = ("nfev", "nit", "opt_value", "opt_params")
 

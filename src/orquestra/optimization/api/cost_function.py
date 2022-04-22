@@ -5,7 +5,7 @@ import numpy as np
 from orquestra.quantum.utils import ValueEstimate
 from typing_extensions import Protocol
 
-from orquestra.functions import (
+from . import (
     CallableStoringArtifacts,
     CallableWithGradient,
     CallableWithGradientStoringArtifacts,

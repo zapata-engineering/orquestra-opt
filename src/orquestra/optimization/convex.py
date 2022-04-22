@@ -4,7 +4,8 @@ import cvxpy as cp
 import numpy as np
 from scipy.optimize import LinearConstraint
 from typing_extensions import Protocol, runtime_checkable
-from zquantum.core.interfaces.optimizer import Optimizer
+
+from .api import Optimizer
 
 
 def solve_qp_problem_for_psd_matrix(

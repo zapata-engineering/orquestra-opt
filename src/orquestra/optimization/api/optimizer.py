@@ -4,17 +4,18 @@ from typing import Callable, Dict, List, Union, cast
 import numpy as np
 import scipy
 from scipy.optimize import OptimizeResult
-from zquantum.core.history.recorder import (
+
+from ..history import (
+    AnyHistory,
+    AnyRecorder,
     ArtifactRecorder,
     ArtifactRecorderWithGradient,
+    RecorderFactory,
     SimpleRecorder,
     SimpleRecorderWithGradient,
 )
-from zquantum.core.history.recorder import recorder as _recorder
-from zquantum.core.interfaces.cost_function import CostFunction
-from zquantum.core.interfaces.functions import CallableWithGradient
-
-from ..typing import AnyHistory, AnyRecorder, RecorderFactory
+from ..history import recorder as _recorder
+from . import CallableWithGradient, CostFunction
 
 
 class Optimizer(ABC):

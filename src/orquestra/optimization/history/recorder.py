@@ -4,14 +4,15 @@ from typing import Any, Callable, Dict, Generic, List, NamedTuple, TypeVar
 
 from typing_extensions import overload
 
-from ..interfaces.functions import (
+from ..api import (
     CallableStoringArtifacts,
     CallableWithGradient,
     CallableWithGradientStoringArtifacts,
+    SaveCondition,
     StoreArtifact,
+    always,
     has_store_artifact_param,
 )
-from .save_conditions import SaveCondition, always
 
 T = TypeVar("T")
 S = TypeVar("S")
