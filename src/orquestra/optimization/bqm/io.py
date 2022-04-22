@@ -1,13 +1,9 @@
 import json
-from io import TextIOBase
-from os import PathLike
-from typing import IO, Any, Dict, Union
+from typing import Any, Dict
 
 import dimod
-from sympy import inverse_sine_transform
-from zquantum.core.serialization import ensure_open
-from zquantum.core.typing import DumpTarget, LoadSource, Readable
-from zquantum.core.utils import SCHEMA_VERSION
+from orquestra.quantum.typing import DumpTarget, LoadSource
+from orquestra.quantum.utils import ensure_open
 
 
 def bqm_to_serializable(bqm: dimod.BinaryQuadraticModel) -> Dict[str, Any]:
@@ -78,7 +74,6 @@ def load_qubo(input_file: LoadSource):
 
 def save_qubo(qubo, output_file: DumpTarget):
     qubo_dict = bqm_to_serializable(qubo)
-    qubo_dict["schema"] = SCHEMA_VERSION + "-qubo"
 
     with ensure_open(output_file, "w") as f:
         json.dump(qubo_dict, f)
@@ -86,7 +81,6 @@ def save_qubo(qubo, output_file: DumpTarget):
 
 def save_sampleset(sampleset, output_file: DumpTarget):
     sampleset_dict = sampleset.to_serializable()
-    sampleset_dict["schema"] = SCHEMA_VERSION + "-sample-set"
 
     with ensure_open(output_file, "w") as f:
         json.dump(sampleset_dict, f)
