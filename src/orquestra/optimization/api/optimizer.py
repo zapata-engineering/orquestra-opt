@@ -142,7 +142,7 @@ class NestedOptimizer(ABC):
     parameters during every iteration or adds new layers of
     the underlying circuit (so called layer-by-layer optimization).
 
-    See MockNestedOptimizer in zquantum.core.interfaces.mock_objects for an example.
+    See MockNestedOptimizer in orquestra.optimization.mock_objects for an example.
 
     Args:
         inner_optimizer: Optimizer object used in the inner optimization loop.

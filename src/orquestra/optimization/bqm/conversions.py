@@ -87,7 +87,7 @@ def convert_sampleset_to_measurements(
     change_bitstring_convention: bool = False,
 ) -> Measurements:
     """
-    Converts dimod SampleSet to zquantum.core Measurements.
+    Converts dimod SampleSet to orquestra.quantum Measurements.
     Works only for the sampleset with "BINARY" vartype and variables being range of
     integers starting from 0.
 
@@ -124,7 +124,7 @@ def convert_measurements_to_sampleset(
     change_bitstring_convention: bool = False,
 ) -> SampleSet:
     """
-    Converts dimod SampleSet to zquantum.core Measurements.
+    Converts dimod SampleSet to orquestra.quantum Measurements.
     If no bqm is specified, the vartype of the SampleSet will be "BINARY" and the
     energies will be NaN. If bqm is specified, its vartype will be preserved and
     the energy values will be calculated.

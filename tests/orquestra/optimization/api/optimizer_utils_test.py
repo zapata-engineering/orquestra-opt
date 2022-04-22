@@ -1,7 +1,7 @@
 import numpy as np
-from zquantum.core.interfaces.optimizer import construct_history_info
 
 from orquestra.optimization.api import FunctionWithGradient
+from orquestra.optimization.api.optimizer import construct_history_info
 from orquestra.optimization.gradients import finite_differences_gradient
 from orquestra.optimization.history import recorder
 
