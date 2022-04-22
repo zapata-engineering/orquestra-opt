@@ -1,15 +1,15 @@
 """Interfaces related to cost functions."""
-from typing import List, Union
+from typing import Union
 
 import numpy as np
+from orquestra.quantum.utils import ValueEstimate
 from typing_extensions import Protocol
-from zquantum.core.interfaces.estimation import EstimationTask
-from zquantum.core.interfaces.functions import (
+
+from orquestra.functions import (
     CallableStoringArtifacts,
     CallableWithGradient,
     CallableWithGradientStoringArtifacts,
 )
-from zquantum.core.utils import ValueEstimate
 
 
 class _CostFunction(Protocol):
