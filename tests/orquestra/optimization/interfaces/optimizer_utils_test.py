@@ -1,6 +1,6 @@
 import numpy as np
 from zquantum.core.gradients import finite_differences_gradient
-from zquantum.core.history.recorder import recorder
+from orquestra.optimization.history import recorder
 from zquantum.core.interfaces.functions import FunctionWithGradient
 from zquantum.core.interfaces.optimizer import construct_history_info
 

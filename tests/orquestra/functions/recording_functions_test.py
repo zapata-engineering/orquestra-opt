@@ -9,8 +9,9 @@ from zquantum.core.history.example_functions import (
     function_1,
     sum_of_squares,
 )
-from zquantum.core.history.recorder import recorder
 from zquantum.core.history.save_conditions import SaveCondition, every_nth
+
+from orquestra.optimization.history import recorder
 
 
 @pytest.mark.parametrize(

@@ -2,12 +2,13 @@ import numpy as np
 import pytest
 from qeqiskit.optimizer import QiskitOptimizer
 from zquantum.core.gradients import finite_differences_gradient
-from zquantum.core.history.recorder import recorder
 from zquantum.core.interfaces.functions import FunctionWithGradient
 from zquantum.core.interfaces.optimizer_test import (
     MANDATORY_OPTIMIZATION_RESULT_FIELDS,
     OptimizerTests,
 )
+
+from orquestra.optimization.history import recorder
 
 
 @pytest.fixture(

@@ -7,7 +7,8 @@ from zquantum.core.history.example_functions import (
     function_4,
     function_6,
 )
-from zquantum.core.history.recorder import recorder
+
+from orquestra.optimization.history import recorder
 
 
 @pytest.mark.parametrize("func", [Function2(5), function_3, function_4, Function5(0.5)])

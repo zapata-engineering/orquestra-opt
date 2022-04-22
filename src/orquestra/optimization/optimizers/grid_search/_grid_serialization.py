@@ -1,7 +1,6 @@
 import json
 
-from zquantum.core.typing import LoadSource, Readable
-from zquantum.core.utils import SCHEMA_VERSION
+from orquestra.quantum.typing import LoadSource, Readable
 
 from ._parameter_grid import ParameterGrid
 
@@ -15,7 +14,6 @@ def save_parameter_grid(grid: ParameterGrid, filename: str) -> None:
     """
 
     data = grid.to_dict()
-    data["schema"] = SCHEMA_VERSION + "-parameter_grid"
 
     with open(filename, "w") as f:
         f.write(json.dumps(data))

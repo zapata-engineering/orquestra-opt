@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 from zquantum.core.history.example_functions import Function5, function_3, function_4
-from zquantum.core.history.recorder import ArtifactCollection, recorder, store_artifact
+from orquestra.optimization.history import ArtifactCollection, recorder, store_artifact
 from zquantum.core.history.save_conditions import every_nth
 from zquantum.core.interfaces.functions import CallableStoringArtifacts
 

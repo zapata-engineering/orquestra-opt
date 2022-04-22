@@ -3,14 +3,15 @@ from typing import Callable, Dict, Optional, Union
 import numpy as np
 from qiskit.algorithms.optimizers import ADAM, NFT, SPSA
 from scipy.optimize import OptimizeResult
-from zquantum.core.history.recorder import recorder as _recorder
-from zquantum.core.interfaces.functions import CallableWithGradient
-from zquantum.core.interfaces.optimizer import (
+
+from ..api import (
+    CallableWithGradient,
     Optimizer,
     construct_history_info,
     optimization_result,
 )
-from zquantum.core.typing import RecorderFactory
+from ..history import RecorderFactory
+from ..history import recorder as _recorder
 
 
 class QiskitOptimizer(Optimizer):

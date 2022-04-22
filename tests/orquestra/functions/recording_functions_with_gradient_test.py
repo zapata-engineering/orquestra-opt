@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 from zquantum.core.history.example_functions import Function2, Function5, function_1
-from zquantum.core.history.recorder import recorder
+from orquestra.optimization.history import recorder
 from zquantum.core.interfaces.functions import CallableWithGradient
 
 
