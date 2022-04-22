@@ -1,7 +1,9 @@
 import pytest
-from zquantum.core.interfaces.mock_objects import mock_cost_function
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.cma_es_optimizer import CMAESOptimizer
+
+from orquestra.optimization.mock_objects import mock_cost_function
+from orquestra.optimization.optimizers.cma_es_optimizer import CMAESOptimizer
+
+from orquestra.optimization.api.optimizer_test import OptimizerTests
 
 
 @pytest.fixture(scope="function")

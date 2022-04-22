@@ -1,8 +1,10 @@
 import numpy as np
 import pytest
-from scipy.optimize import OptimizeResult
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.search_points_optimizer import SearchPointsOptimizer
+
+from orquestra.optimization.api.optimizer_test import OptimizerTests
+from orquestra.optimization.optimizers.search_points_optimizer import (
+    SearchPointsOptimizer,
+)
 
 
 @pytest.fixture(

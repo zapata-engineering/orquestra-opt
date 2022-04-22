@@ -1,5 +1,5 @@
 import numpy as np
-from zquantum.core.interfaces.mock_objects import MockOptimizer
+from orquestra.optimization.mock_objects import MockOptimizer
 
 
 class CustomMockOptimizer(MockOptimizer):

@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
-from qeqiskit.optimizer import QiskitOptimizer
-from zquantum.core.gradients import finite_differences_gradient
-from zquantum.core.interfaces.functions import FunctionWithGradient
-from zquantum.core.interfaces.optimizer_test import (
+
+from orquestra.optimization.api import FunctionWithGradient
+from orquestra.optimization.gradients import finite_differences_gradient
+from orquestra.optimization.optimizers.qiskit_optimizer import QiskitOptimizer
+
+from orquestra.optimization.api.optimizer_test import (
     MANDATORY_OPTIMIZATION_RESULT_FIELDS,
     OptimizerTests,
 )
-
-from orquestra.optimization.history import recorder
 
 
 @pytest.fixture(

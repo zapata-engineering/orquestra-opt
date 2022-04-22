@@ -1,7 +1,8 @@
 """Tests for core.gradients module."""
 import numpy as np
 import pytest
-from zquantum.core.gradients import finite_differences_gradient
+
+from orquestra.optimization.gradients import finite_differences_gradient
 
 
 def sum_x_squared(parameters: np.ndarray) -> float:

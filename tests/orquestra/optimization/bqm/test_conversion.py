@@ -1,15 +1,16 @@
 import dimod
 import numpy as np
 import pytest
-from zquantum.core.openfermion.ops.operators.ising_operator import IsingOperator
-from zquantum.qubo.conversions import (
+from orquestra.quantum.openfermion import IsingOperator
+
+from orquestra.optimization.bqm.conversions import (
     convert_measurements_to_sampleset,
     convert_openfermion_ising_to_qubo,
     convert_qubo_to_openfermion_ising,
     convert_sampleset_to_measurements,
 )
 
-from zquantum.core.measurement import Measurements  # isort: skip
+from orquestra.quantum.measurements import Measurements  # isort: skip
 
 
 def test_qubo_conversion_with_binary_fractions():

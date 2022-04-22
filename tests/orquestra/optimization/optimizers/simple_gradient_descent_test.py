@@ -1,9 +1,12 @@
 import numpy as np
 import pytest
-from zquantum.core.gradients import finite_differences_gradient
-from zquantum.core.interfaces.functions import function_with_gradient
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.simple_gradient_descent import SimpleGradientDescent
+
+from orquestra.optimization.api import function_with_gradient
+from orquestra.optimization.api.optimizer_test import OptimizerTests
+from orquestra.optimization.gradients import finite_differences_gradient
+from orquestra.optimization.optimizers.simple_gradient_descent import (
+    SimpleGradientDescent,
+)
 
 
 @pytest.fixture(
@@ -27,7 +30,7 @@ class TestSimpleGradientDescent(OptimizerTests):
     @pytest.fixture
     def sum_x_squared(self):
         def _sum_x_squared(x):
-            return sum(x ** 2)
+            return sum(x**2)
 
         return function_with_gradient(
             _sum_x_squared, finite_differences_gradient(_sum_x_squared)

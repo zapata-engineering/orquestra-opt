@@ -3,7 +3,8 @@ from io import StringIO
 import dimod
 import numpy as np
 import pytest
-from zquantum.qubo.io import (
+
+from orquestra.optimization.bqm.io import (
     bqm_from_serializable,
     bqm_to_serializable,
     load_qubo,

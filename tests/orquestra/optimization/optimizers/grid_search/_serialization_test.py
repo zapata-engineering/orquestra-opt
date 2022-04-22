@@ -1,6 +1,6 @@
 import os
 
-from zquantum.optimizers.grid_search import (
+from orquestra.optimization.optimizers.grid_search import (
     ParameterGrid,
     load_parameter_grid,
     save_parameter_grid,

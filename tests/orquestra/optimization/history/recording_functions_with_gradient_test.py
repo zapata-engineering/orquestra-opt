@@ -1,9 +1,13 @@
 """Test cases for recording functions with gradients."""
 import numpy as np
 import pytest
-from zquantum.core.history.example_functions import Function2, Function5, function_1
+from orquestra.optimization.api.example_functions import (
+    Function2,
+    Function5,
+    function_1,
+)
 from orquestra.optimization.history import recorder
-from zquantum.core.interfaces.functions import CallableWithGradient
+from orquestra.optimization.api import CallableWithGradient
 
 
 @pytest.mark.parametrize(

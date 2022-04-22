@@ -6,6 +6,7 @@ from .functions import (
     FunctionWithGradient,
     FunctionWithGradientStoringArtifacts,
     StoreArtifact,
+    function_with_gradient,
     has_store_artifact_param,
 )
 from .optimizer import (

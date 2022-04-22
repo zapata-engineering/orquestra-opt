@@ -1,8 +1,13 @@
 import numpy as np
 import pytest
 from scipy.optimize import OptimizeResult
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.grid_search import GridSearchOptimizer, ParameterGrid
+
+from orquestra.optimization.optimizers.grid_search import (
+    GridSearchOptimizer,
+    ParameterGrid,
+)
+
+from ..optimizer_test import OptimizerTests
 
 
 @pytest.fixture(params=[ParameterGrid([(0, 1.5, 0.1), (0, 1.5, 0.1)])])

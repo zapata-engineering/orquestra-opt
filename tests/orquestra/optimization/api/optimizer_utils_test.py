@@ -1,8 +1,9 @@
 import numpy as np
-from zquantum.core.gradients import finite_differences_gradient
-from orquestra.optimization.history import recorder
-from zquantum.core.interfaces.functions import FunctionWithGradient
 from zquantum.core.interfaces.optimizer import construct_history_info
+
+from orquestra.optimization.api import FunctionWithGradient
+from orquestra.optimization.gradients import finite_differences_gradient
+from orquestra.optimization.history import recorder
 
 
 def sum_x_squared(x):

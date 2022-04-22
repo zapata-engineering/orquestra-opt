@@ -180,7 +180,7 @@ other projects.
 
 Usage:
 
-    from zquantum.core.interfaces.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
+    from orquestra.optimization.api.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
 
     @pytest.mark.parametrize("contract", NESTED_OPTIMIZER_CONTRACTS)
     def test_nestedoptimizer_contract(contract):

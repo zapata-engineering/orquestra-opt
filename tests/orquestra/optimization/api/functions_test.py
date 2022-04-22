@@ -1,8 +1,5 @@
-from zquantum.core.gradients import finite_differences_gradient
-from zquantum.core.interfaces.functions import (
-    function_with_gradient,
-    has_store_artifact_param,
-)
+from orquestra.optimization.api import function_with_gradient, has_store_artifact_param
+from orquestra.optimization.gradients import finite_differences_gradient
 
 
 class TestAddingGradient:

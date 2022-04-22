@@ -1,7 +1,8 @@
 from copy import copy, deepcopy
 
 import pytest
-from zquantum.core.history.example_functions import (
+
+from orquestra.optimization.api.example_functions import (
     Function2,
     Function5,
     function_1,
@@ -9,7 +10,6 @@ from zquantum.core.history.example_functions import (
     function_4,
     function_6,
 )
-
 from orquestra.optimization.history import recorder
 
 

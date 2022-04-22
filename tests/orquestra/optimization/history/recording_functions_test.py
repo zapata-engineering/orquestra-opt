@@ -3,14 +3,14 @@ from unittest.mock import Mock, call
 
 import numpy as np
 import pytest
-from zquantum.core.history.example_functions import (
+
+from orquestra.optimization.api.example_functions import (
     Function2,
     Function5,
     function_1,
     sum_of_squares,
 )
-from zquantum.core.history.save_conditions import SaveCondition, every_nth
-
+from orquestra.optimization.api.save_conditions import SaveCondition, every_nth
 from orquestra.optimization.history import recorder
 
 

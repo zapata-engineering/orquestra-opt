@@ -1,10 +1,15 @@
 """Test cases for storing artifacts and recording functions that store them."""
 import numpy as np
 import pytest
-from zquantum.core.history.example_functions import Function5, function_3, function_4
+
+from orquestra.optimization.api import CallableStoringArtifacts
+from orquestra.optimization.api.example_functions import (
+    Function5,
+    function_3,
+    function_4,
+)
+from orquestra.optimization.api.save_conditions import every_nth
 from orquestra.optimization.history import ArtifactCollection, recorder, store_artifact
-from zquantum.core.history.save_conditions import every_nth
-from zquantum.core.interfaces.functions import CallableStoringArtifacts
 
 
 def test_store_artifact_by_default_does_not_force_artifacts_storage():

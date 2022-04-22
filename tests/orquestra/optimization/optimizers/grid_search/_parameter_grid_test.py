@@ -1,8 +1,13 @@
 import numpy as np
 import pytest
 from scipy.optimize import OptimizeResult
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.grid_search import ParameterGrid, build_uniform_param_grid
+
+from orquestra.optimization.optimizers.grid_search import (
+    ParameterGrid,
+    build_uniform_param_grid,
+)
+
+from ..optimizer_test import OptimizerTests
 
 
 class TestParameterGrid:

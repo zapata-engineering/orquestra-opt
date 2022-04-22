@@ -2,13 +2,15 @@ from typing import Callable
 
 import numpy as np
 import pytest
-from zquantum.core.interfaces.cost_function import CostFunction
-from zquantum.core.interfaces.mock_objects import (
+
+from orquestra.optimization.api import CostFunction
+from orquestra.optimization.mock_objects import (
     MockNestedOptimizer,
     MockOptimizer,
     mock_cost_function,
 )
-from zquantum.core.interfaces.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
+
+from orquestra.optimization.api.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
 
 
 class MaliciousNestedOptimizer(MockNestedOptimizer):

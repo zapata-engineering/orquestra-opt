@@ -1,6 +1,7 @@
 import pytest
-from zquantum.core.interfaces.optimizer_test import OptimizerTests
-from zquantum.optimizers.basin_hopping import BasinHoppingOptimizer
+
+from orquestra.optimization.api.optimizer_test import OptimizerTests
+from orquestra.optimization.optimizers.basin_hopping import BasinHoppingOptimizer
 
 
 @pytest.fixture(
