@@ -86,7 +86,7 @@ class MockNestedOptimizer(NestedOptimizer):
             nfev += opt_result.nfev
             current_params = opt_result.opt_params
             if keep_history:
-                histories = extend_histories(cost_function, histories)
+                histories = extend_histories(cost_function, histories)  # type: ignore
         return optimization_result(
             opt_value=opt_result.opt_value,
             opt_params=current_params,

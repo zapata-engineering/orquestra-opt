@@ -1,13 +1,14 @@
 """Test cases for recording functions with gradients."""
 import numpy as np
 import pytest
+
+from orquestra.optimization.api import CallableWithGradient
 from orquestra.optimization.api.example_functions import (
     Function2,
     Function5,
     function_1,
 )
 from orquestra.optimization.history import recorder
-from orquestra.optimization.api import CallableWithGradient
 
 
 @pytest.mark.parametrize(

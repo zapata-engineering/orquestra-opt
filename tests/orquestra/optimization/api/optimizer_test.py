@@ -1,4 +1,5 @@
 import numpy as np
+
 from orquestra.optimization.mock_objects import MockOptimizer
 
 

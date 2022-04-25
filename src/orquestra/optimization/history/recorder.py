@@ -210,8 +210,8 @@ def store_artifact(artifacts) -> StoreArtifact:
 
 
 AnyRecorder = Union[SimpleRecorder, ArtifactRecorder]
-AnyHistory = Union[List[HistoryEntry], List[HistoryEntryWithArtifacts]]
 RecorderFactory = Callable[[Callable], AnyRecorder]
+AnyHistory = Union[List[HistoryEntry], List[HistoryEntryWithArtifacts]]
 
 
 @overload

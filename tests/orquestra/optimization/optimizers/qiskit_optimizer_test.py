@@ -2,13 +2,12 @@ import numpy as np
 import pytest
 
 from orquestra.optimization.api import FunctionWithGradient
-from orquestra.optimization.gradients import finite_differences_gradient
-from orquestra.optimization.optimizers.qiskit_optimizer import QiskitOptimizer
-
 from orquestra.optimization.api.optimizer_test import (
     MANDATORY_OPTIMIZATION_RESULT_FIELDS,
     OptimizerTests,
 )
+from orquestra.optimization.gradients import finite_differences_gradient
+from orquestra.optimization.optimizers.qiskit_optimizer import QiskitOptimizer
 
 
 @pytest.fixture(

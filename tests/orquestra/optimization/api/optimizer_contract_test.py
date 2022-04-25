@@ -4,13 +4,12 @@ import numpy as np
 import pytest
 
 from orquestra.optimization.api import CostFunction
+from orquestra.optimization.api.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
 from orquestra.optimization.mock_objects import (
     MockNestedOptimizer,
     MockOptimizer,
     mock_cost_function,
 )
-
-from orquestra.optimization.api.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
 
 
 class MaliciousNestedOptimizer(MockNestedOptimizer):
