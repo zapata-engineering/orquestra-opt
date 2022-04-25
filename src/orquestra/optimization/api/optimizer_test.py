@@ -11,8 +11,10 @@ import numpy as np
 import pytest
 
 from ..gradients import finite_differences_gradient
-from ..history import recorder
-from . import CostFunction, FunctionWithGradient, NestedOptimizer, Optimizer
+from ..history.recorder import recorder
+from .cost_function import CostFunction
+from .functions import FunctionWithGradient
+from .optimizer import NestedOptimizer
 
 MANDATORY_OPTIMIZATION_RESULT_FIELDS = ("nfev", "nit", "opt_value", "opt_params")
 

@@ -1,5 +1,3 @@
-from typing import Callable, Union
-
 from .recorder import (
     ArtifactRecorder,
     ArtifactRecorderWithGradient,
@@ -7,6 +5,3 @@ from .recorder import (
     SimpleRecorderWithGradient,
     recorder,
 )
-
-AnyRecorder = Union[SimpleRecorder, ArtifactRecorder]
-RecorderFactory = Callable[[Callable], AnyRecorder]

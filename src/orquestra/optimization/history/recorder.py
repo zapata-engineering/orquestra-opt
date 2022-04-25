@@ -1,18 +1,17 @@
 """Main implementation of the recorder."""
 import copy
-from typing import Any, Callable, Dict, Generic, List, NamedTuple, TypeVar
+from typing import Any, Callable, Dict, Generic, List, NamedTuple, TypeVar, Union
 
 from typing_extensions import overload
 
-from ..api import (
+from ..api.functions import (
     CallableStoringArtifacts,
     CallableWithGradient,
     CallableWithGradientStoringArtifacts,
-    SaveCondition,
     StoreArtifact,
-    always,
     has_store_artifact_param,
 )
+from ..api.save_conditions import SaveCondition, always
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -208,6 +207,11 @@ def store_artifact(artifacts) -> StoreArtifact:
             artifacts.forced = True
 
     return _store
+
+
+AnyRecorder = Union[SimpleRecorder, ArtifactRecorder]
+AnyHistory = Union[List[HistoryEntry], List[HistoryEntryWithArtifacts]]
+RecorderFactory = Callable[[Callable], AnyRecorder]
 
 
 @overload

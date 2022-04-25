@@ -9,7 +9,11 @@ from orquestra.optimization.api.example_functions import (
     function_4,
 )
 from orquestra.optimization.api.save_conditions import every_nth
-from orquestra.optimization.history import ArtifactCollection, recorder, store_artifact
+from orquestra.optimization.history.recorder import (
+    ArtifactCollection,
+    recorder,
+    store_artifact,
+)
 
 
 def test_store_artifact_by_default_does_not_force_artifacts_storage():

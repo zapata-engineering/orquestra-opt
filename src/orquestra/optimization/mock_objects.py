@@ -4,16 +4,16 @@ from typing import Callable, Dict, List
 
 import numpy as np
 
-from .api import CostFunction
-from .history import RecorderFactory
-from .history import recorder as _recorder
-from .optimizers import (
+from .api import (
+    CostFunction,
     NestedOptimizer,
     Optimizer,
     construct_history_info,
-    extend_histories,
     optimization_result,
 )
+from .api.optimizer import extend_histories
+from .history.recorder import RecorderFactory
+from .history.recorder import recorder as _recorder
 
 
 class MockOptimizer(Optimizer):

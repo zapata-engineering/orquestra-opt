@@ -68,7 +68,6 @@ def load_qubo(input_file: LoadSource):
     with ensure_open(input_file, "r") as f:
         qubo_dict = json.load(f)
 
-    del qubo_dict["schema"]
     return bqm_from_serializable(qubo_dict)
 
 
@@ -91,5 +90,4 @@ def load_sampleset(input_file: LoadSource):
     with ensure_open(input_file, "r") as f:
         sampleset_dict = json.load(f)
 
-    del sampleset_dict["schema"]
     return dimod.SampleSet.from_serializable(sampleset_dict)

@@ -7,7 +7,7 @@ from typing import Optional
 
 import numpy as np
 
-from ..api import (
+from .functions import (
     FunctionWithGradient,
     FunctionWithGradientStoringArtifacts,
     StoreArtifact,

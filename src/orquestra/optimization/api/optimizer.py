@@ -5,7 +5,7 @@ import numpy as np
 import scipy
 from scipy.optimize import OptimizeResult
 
-from ..history import (
+from ..history.recorder import (
     AnyHistory,
     AnyRecorder,
     ArtifactRecorder,
@@ -14,7 +14,7 @@ from ..history import (
     SimpleRecorder,
     SimpleRecorderWithGradient,
 )
-from ..history import recorder as _recorder
+from ..history.recorder import recorder as _recorder
 from . import CallableWithGradient, CostFunction
 
 

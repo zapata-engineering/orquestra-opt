@@ -9,8 +9,8 @@ from ..api import (
     construct_history_info,
     optimization_result,
 )
-from ..history import RecorderFactory
-from ..history import recorder as _recorder
+from ..history.recorder import RecorderFactory
+from ..history.recorder import recorder as _recorder
 
 
 class BasinHoppingOptimizer(Optimizer):

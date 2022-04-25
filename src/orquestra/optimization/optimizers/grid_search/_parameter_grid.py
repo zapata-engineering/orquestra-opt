@@ -4,7 +4,7 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 
 from ...api import CallableWithGradient, Optimizer, optimization_result
-from ...history import recorder
+from ...history.recorder import recorder
 
 
 class ParameterGrid:
