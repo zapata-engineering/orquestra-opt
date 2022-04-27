@@ -34,7 +34,7 @@ jobs:
         with:
           repository: zapatacomputing/orquestra-quantum
           path: orquestra-quantum
-          ref: main
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # ------------------------------------------------------------------------
       # Loads private SSH key to the SSH agent. Allows to install dependencies
