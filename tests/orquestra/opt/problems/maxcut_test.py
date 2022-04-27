@@ -4,7 +4,8 @@
 import copy
 
 import pytest
-from zquantum.qaoa.problems import MaxCut
+
+from orquestra.opt.problems import MaxCut
 
 from ._helpers import make_graph
 

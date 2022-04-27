@@ -2,9 +2,10 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import pytest
-from zquantum.core.openfermion import QubitOperator, change_operator_type
-from zquantum.core.openfermion.utils import count_qubits
-from zquantum.qaoa.problems import (
+from orquestra.quantum.openfermion import QubitOperator, change_operator_type
+from orquestra.quantum.openfermion.utils import count_qubits
+
+from orquestra.opt.problems import (
     MaxCut,
     get_random_hamiltonians_for_problem,
     get_random_ising_hamiltonian,

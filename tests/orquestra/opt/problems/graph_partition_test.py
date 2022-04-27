@@ -5,7 +5,8 @@ import copy
 
 import networkx as nx
 import pytest
-from zquantum.qaoa.problems import GraphPartitioning
+
+from orquestra.opt.problems import GraphPartitioning
 
 from ._helpers import graph_node_index, make_graph
 

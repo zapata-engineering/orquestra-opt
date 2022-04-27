@@ -2,9 +2,9 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from zquantum.core.openfermion import QubitOperator
+from orquestra.quantum.openfermion import QubitOperator
 
-from .problem import Problem
+from ..api.problem import Problem
 
 
 class MaxCut(Problem):

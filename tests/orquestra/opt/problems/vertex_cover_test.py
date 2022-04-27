@@ -5,7 +5,8 @@ import copy
 
 import networkx as nx
 import pytest
-from zquantum.qaoa.problems import VertexCover
+
+from orquestra.opt.problems import VertexCover
 
 from ._helpers import graph_node_index, make_graph
 

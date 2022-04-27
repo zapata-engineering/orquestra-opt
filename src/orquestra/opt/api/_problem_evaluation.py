@@ -6,11 +6,11 @@ from typing import Callable, List, Tuple, cast
 
 import networkx as nx
 import numpy as np
-from zquantum.core.measurement import Measurements, expectation_values_to_real
-from zquantum.core.openfermion import IsingOperator, change_operator_type
-from zquantum.core.openfermion.ops.operators.qubit_operator import QubitOperator
-from zquantum.core.openfermion.utils import count_qubits
-from zquantum.core.utils import dec2bin
+from orquestra.quantum.measurements import Measurements, expectation_values_to_real
+from orquestra.quantum.openfermion import IsingOperator, change_operator_type
+from orquestra.quantum.openfermion.ops.operators.qubit_operator import QubitOperator
+from orquestra.quantum.openfermion.utils import count_qubits
+from orquestra.quantum.utils import dec2bin
 
 
 # This is the only function in this file in the Public API
