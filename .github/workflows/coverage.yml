@@ -29,6 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get orquestra-quantum
+        uses: actions/checkout@v2
+        with:
+          repository: zapatacomputing/orquestra-quantum
+          path: orquestra-quantum
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       # ------------------------------------------------------------------------
       # Loads private SSH key to the SSH agent. Allows to install dependencies
       # from private git repos, but requires setting `secrets.SSH_PRIVATE_KEY`
