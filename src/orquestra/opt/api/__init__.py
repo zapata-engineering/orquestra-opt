@@ -15,4 +15,4 @@ from .optimizer import (
     construct_history_info,
     optimization_result,
 )
-from .save_conditions import SaveCondition, always
+from .save_conditions import SaveCondition, always, every_nth
