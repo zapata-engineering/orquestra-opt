@@ -13,7 +13,6 @@ default:
 	       | sed -r 's/-default//g; /default/d ; s/(.*)/\t make \1/g ; s/:.*$$//g'
 
 
-export VENV := venv
 PYTHON := $(shell PATH="venv/bin:${PATH}" python3 -c 'import sys; print(sys.executable)')
 REPO := $(shell git config --get remote.origin.url)
 PYTHON_MOD := $(shell find src -maxdepth 3 -mindepth 3 -type d | sed '/.*cache/d; s/src\/python\/// ; s/\//./')
@@ -49,9 +48,8 @@ dev-default: clean
 	$(PYTHON) -m pip install -e .[dev]
 
 github_actions-default:
-	python3 -m venv ${VENV} && \
-		${VENV}/bin/python3 -m pip install --upgrade pip && \
-		${VENV}/bin/python3 -m pip install -e '.[dev]'
+		${PYTHON} -m pip install --upgrade pip && \
+		${PYTHON} -m pip install -e '.[dev]'
 
 flake8-default: clean
 	$(PYTHON) -m flake8 --ignore=E203,E266,F401,W503 --max-line-length=88 src tests
