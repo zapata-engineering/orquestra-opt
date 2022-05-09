@@ -35,6 +35,8 @@ jobs:
         with:
           repository: zapatacomputing/orquestra-quantum
           path: orquestra-quantum
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
       - name: Install deps
         shell: bash
