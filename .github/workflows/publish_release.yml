@@ -37,9 +37,9 @@ jobs:
           path: orquestra-quantum
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install deps
+      - name: Install internal deps
         shell: bash
-        run: make github_actions
+        run: make install_internal_deps
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
