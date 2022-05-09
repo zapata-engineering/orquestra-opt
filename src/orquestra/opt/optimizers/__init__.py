@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 from .basin_hopping import BasinHoppingOptimizer
 from .cma_es_optimizer import CMAESOptimizer
 from .qiskit_optimizer import QiskitOptimizer

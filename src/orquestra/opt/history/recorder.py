@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 """Main implementation of the recorder."""
 import copy
 from typing import Any, Callable, Dict, Generic, List, NamedTuple, TypeVar, Union

@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 from .cost_function import CostFunction
 from .functions import (
     CallableStoringArtifacts,

@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 from orquestra.opt.api import function_with_gradient, has_store_artifact_param
 from orquestra.opt.gradients import finite_differences_gradient
 

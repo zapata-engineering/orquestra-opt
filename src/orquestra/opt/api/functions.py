@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 """Protocols describing different kinds of functions."""
 from inspect import signature
 from typing import Any, Callable, NamedTuple, Optional, TypeVar, Union, cast

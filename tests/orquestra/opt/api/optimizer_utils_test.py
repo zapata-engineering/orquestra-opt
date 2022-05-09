@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 import numpy as np
 
 from orquestra.opt.api import FunctionWithGradient
