@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 import pytest
 
 from orquestra.opt.api.optimizer_test import OptimizerTests
