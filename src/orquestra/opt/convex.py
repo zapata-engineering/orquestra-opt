@@ -122,7 +122,7 @@ def is_matrix_positive_semidefinite(matrix: np.ndarray) -> bool:
     return np.min(eigenvalues) >= 0
 
 
-# Temporary solution until constraints added to optimizer.py in z-quantum-core
+# Temporary solution until constraints added to optimizer.py in orquestra-opt
 @runtime_checkable
 class _WithConstraints(Protocol):
     """Minimum interface for Optimizers with constraints"""

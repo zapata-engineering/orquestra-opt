@@ -1,11 +1,35 @@
-# orquestra-python-template
-This is a template repository for Orquestra Python projects.
+# orquestra-opt
 
-After creating repository from this template, make sure to follow the steps below:
+## What is it?
 
-1. Specify license. Supply LICENSE file and fill license entry in `setup.cfg` accordingly.
-2. Update `setup.cfg`. At the very least update the following fields:
-   - `[metadata]` section: `name`, `description`, `license`, `license_file`, 
-   - `install_requires` in `[options]` section. You don't have to do this at the very beginning and you may add requirements as you go, but be warry that the ones present in this repository are only example ones and may not be applicable to your project.
-3. Substitute an example `orquestra.pythontemplate` package `src/` directory with your actual code. Remember, that `orquestra` is a namespace package, so you *cannot* put an `__init__.py` in `src/orquestra` directory. Remove tests for the dummy package and replace them with meaningful ones as you develop your package.
-4. Remove this instruction and replace it with a meaningful description of your package.
+`orquestra-opt` is a library with core functionalities for optimizing cost functions developed by [Zapata](https://www.zapatacomputing.com) for our [Orquestra](https://www.zapatacomputing.com/orquestra/) platform.
+
+`orquestra-opt` provides:
+
+- interfaces for implementing ansatzes including qaoa and qcbm.
+- optimizers and cost functions tailored to opt
+- misc functions such as grouping, qaoa interpolation, and estimators
+
+## Installation
+
+Even though it's intended to be used with Orquestra, `orquestra-opt` can be also used as a standalone Python module.
+For a basic install, you just need to run `pip install -e .` from the main directory.
+If you need to make use of optimizers from qiskit or solve qubo problems, then you should instead run `pip install -e '.[qiskit]'` or `pip install -e '.[qubo]'` respectively. If you need both, you should run `pip install -e '.[all]'`
+
+## Usage
+
+Here's an example of how to use methods from `orquestra-opt` to solve a simple maximum cut problem.
+
+```python
+from orquestra.opt.problems import MaxCut
+import networkx as nx
+
+def orquestra_opt_example_function()
+   graph = nx.complete_graph(4)
+   value, solutions = MaxCut().solve_by_exhaustive_search(graph)
+   return solutions
+```
+
+## Development and Contribution
+
+You can find the development guidelines in the [`orquestra-quantum` repository](https://github.com/zapatacomputing/orquestra-quantum).
