@@ -14,7 +14,7 @@
 
 Even though it's intended to be used with Orquestra, `orquestra-opt` can be also used as a standalone Python module.
 For a basic install, you just need to run `pip install -e .` from the main directory.
-If you need to make use of optimizers from qiskit or solve qubo problems, then you should instead run `pip install -e '.[qiskit]'` or `pip install -e '.[qubo]'` respectively. If you need both, you should run `pip install -e '.[dev]'`
+If you need to make use of optimizers from qiskit or solve qubo problems, then you should instead run `pip install -e '.[qiskit]'` or `pip install -e '.[qubo]'` respectively. If you need both, you should run `pip install -e '.[all]'`
 
 ## Usage
 
