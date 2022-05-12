@@ -23,9 +23,7 @@ runs:
       shell: bash
       # Note: We assume library name is the same as repository name
       # Outputs: `next_version` - a bumped semver string of form "major.minor.patch"
-      run: |
-        make install
-        python3 subtrees/z_quantum_actions/bin/get_next_version.py "${{ github.event.repository.name }}"
+      run: make get-next-version PACKAGE_NAME="${{ github.event.repository.name }}"
       # This is needed if we work on the private repositories, doesn't bother us otherwise though
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
