@@ -18,22 +18,15 @@ If you need to make use of optimizers from qiskit or solve qubo problems, then y
 
 ## Usage
 
-Here's an example of how to use methods from `orquestra-opt` to solve a simple maximal independent set problem.
+Here's an example of how to use methods from `orquestra-opt` to solve a simple maximum cut problem.
 
 ```python
 from orquestra.opt.problems import MaxCut
 import networkx as nx
 
 def orquestra_opt_example_function()
-   node_ids=range(2)
-   edges=[(0, 1)]
-   
-   graph = nx.Graph()
-   graph.add_nodes_from(node_ids)
-   graph.add_edges_from(edges)
-
+   graph = nx.complete_graph(4)
    value, solutions = MaxCut().solve_by_exhaustive_search(graph)
-
    return solutions
 ```
 
