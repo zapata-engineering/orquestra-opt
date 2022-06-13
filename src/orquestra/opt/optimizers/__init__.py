@@ -12,6 +12,10 @@ try:
     from .qiskit_optimizer import QiskitOptimizer
 except ModuleNotFoundError:
     pass
+try:
+    from .scipy_optimizer import ScipyOptimizer
+except ModuleNotFoundError:
+    pass
 from .scipy_optimizer import ScipyOptimizer
 from .search_points_optimizer import SearchPointsOptimizer
 from .simple_gradient_descent import SimpleGradientDescent
