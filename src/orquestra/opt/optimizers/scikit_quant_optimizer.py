@@ -28,6 +28,7 @@ class ScikitQuantOptimizer(Optimizer):
         Please refer to https://scikit-learn.org/stable/ for sckit package and
         https://scikit-quant.readthedocs.io/en/latest/ for scikit-quant package.
         The code can be accessed at https://github.com/scikit-quant/scikit-quant.
+        Please refer to https://arxiv.org/pdf/2004.03004.pdf to access the paper
 
 
 
