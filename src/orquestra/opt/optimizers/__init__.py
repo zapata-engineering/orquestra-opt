@@ -13,7 +13,7 @@ try:
 except ModuleNotFoundError:
     pass
 try:
-    from .scipy_optimizer import ScipyOptimizer
+    from .scikit_quant_optimizer import ScikitQuantOptimizer
 except ModuleNotFoundError:
     pass
 from .scipy_optimizer import ScipyOptimizer
