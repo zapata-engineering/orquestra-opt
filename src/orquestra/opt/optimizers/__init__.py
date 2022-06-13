@@ -2,6 +2,7 @@
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
 from .basin_hopping import BasinHoppingOptimizer
+
 # we are using try/except to avoid errors when optional requirements are not installed
 try:
     from .cma_es_optimizer import CMAESOptimizer

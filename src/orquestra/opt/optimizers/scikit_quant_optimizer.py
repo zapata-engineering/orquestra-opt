@@ -20,11 +20,15 @@ class ScikitQuantOptimizer(Optimizer):
     ) -> None:
         """
         Integration with scipy optimizers. Documentation for this module is minimal,
-        please refer to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
+        please refer to
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
 
         NOTE:
-            This optimizer doesn't work with one element array as an input. This is due to bug inside the scikit package.
-            Please refer to https://scikit-learn.org/stable/ for sckit package and https://scikit-quant.readthedocs.io/en/latest/ for scikit-quant package.
+            This optimizer doesn't work with one element array as an input.
+            This is due to bug inside the scikit package.
+
+            Please refer to https://scikit-learn.org/stable/ for sckit package and
+            https://scikit-quant.readthedocs.io/en/latest/ for scikit-quant package.
             The code can be accessed at https://github.com/scikit-quant/scikit-quant.
 
 
@@ -32,12 +36,14 @@ class ScikitQuantOptimizer(Optimizer):
         Args:
             method: defines the optimization method
             bounds: list of constraints in the scipy compatible format.
-            budget: maximum number of optimization iterations. Similar to SciPy's maxiter
+            budget: maximum number of optimization iterations.
+                Similar to SciPy's maxiter
             bounds: upper and lower bounds of the parameters. Each parameter has its own
                 bounds. Tighter bounds lead to better optimization. When None is passed,
-                (-1000, 1000) will be used as the bounds. If a single bound is provided it
-                will be used for all the passed parameters.
-            recorder: recorder object which defines how to store the optimization history.
+                (-1000, 1000) will be used as the bounds. If a single bound is provided
+                it will be used for all the passed parameters.
+            recorder: recorder object which defines how to store the
+                optimization history.
 
         """
         super().__init__(recorder=recorder)
@@ -74,7 +80,8 @@ class ScikitQuantOptimizer(Optimizer):
         if self.bounds is None:
             warnings.warn(
                 "Providing bounds for parameters is HIGHLY recommended! "
-                + "(-1000, 1000) will be used as the bounds, which can hinder convergence.",
+                + "(-1000, 1000) will be used as the bounds, which can hinder "
+                + "convergence.",
             )
             self.bounds = np.array([[-1000, 1000]])
 
