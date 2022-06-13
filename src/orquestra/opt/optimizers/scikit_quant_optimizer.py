@@ -19,17 +19,17 @@ class ScikitQuantOptimizer(Optimizer):
         recorder: RecorderFactory = _recorder,
     ) -> None:
         """
-        Integration with scipy optimizers. Documentation for this module is minimal,
-        please refer to
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
+        Integration with scikit-quant optimizers. Documentation for this
+        module is minimal, please refer to https://scikit-quant.readthedocs.io/en/latest/
 
-        NOTE:
-            This optimizer doesn't work with one element array as an input.
-            This is due to bug inside the scikit package.
+        This optimizer doesn't work with one element array as an input.
+        This is due to bug inside the scikit package.
 
-            Please refer to https://scikit-learn.org/stable/ for sckit package and
-            https://scikit-quant.readthedocs.io/en/latest/ for scikit-quant package.
-            The code can be accessed at https://github.com/scikit-quant/scikit-quant.
+        Please refer to https://scikit-learn.org/stable/ for sckit package and
+        https://scikit-quant.readthedocs.io/en/latest/ for scikit-quant package.
+        The code can be accessed at https://github.com/scikit-quant/scikit-quant.
+
+
 
 
 

@@ -82,8 +82,6 @@ class OptimizerTests(object):
             sum_x_squared, finite_differences_gradient(sum_x_squared)
         )
 
-        # if self.bounds =
-
         results = optimizer.minimize(
             cost_function, initial_params=np.array([1, -1]), keep_history=keep_history
         )
