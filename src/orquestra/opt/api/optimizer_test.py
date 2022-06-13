@@ -65,6 +65,7 @@ class OptimizerTests(object):
         results = optimizer.minimize(
             cost_function, initial_params=np.array([0, 0]), keep_history=keep_history
         )
+
         assert results.opt_value == pytest.approx(0, abs=1e-4)
         assert results.opt_params == pytest.approx(np.ones(2), abs=1e-3)
 
@@ -80,6 +81,8 @@ class OptimizerTests(object):
         cost_function = FunctionWithGradient(
             sum_x_squared, finite_differences_gradient(sum_x_squared)
         )
+
+        # if self.bounds =
 
         results = optimizer.minimize(
             cost_function, initial_params=np.array([1, -1]), keep_history=keep_history
