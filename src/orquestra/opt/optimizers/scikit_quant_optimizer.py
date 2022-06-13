@@ -20,7 +20,8 @@ class ScikitQuantOptimizer(Optimizer):
     ) -> None:
         """
         Integration with scikit-quant optimizers. Documentation for this
-        module is minimal, please refer to https://scikit-quant.readthedocs.io/en/latest/
+        module is minimal, please refer to
+        https://scikit-quant.readthedocs.io/en/latest/
 
         This optimizer doesn't work with one element array as an input.
         This is due to bug inside the scikit package.
