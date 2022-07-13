@@ -2,9 +2,7 @@
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
 """Save conditions possible to use with recorder."""
-from typing import Any
-
-from typing_extensions import Protocol
+from typing import Any, Protocol
 
 
 class SaveCondition(Protocol):

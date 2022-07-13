@@ -2,11 +2,10 @@
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
 """Interfaces related to cost functions."""
-from typing import Union
+from typing import Protocol, Union
 
 import numpy as np
 from orquestra.quantum.utils import ValueEstimate
-from typing_extensions import Protocol
 
 from .functions import (
     CallableStoringArtifacts,

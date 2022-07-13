@@ -1,12 +1,11 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
-from typing import Optional, Tuple
+from typing import Optional, Protocol, Tuple, runtime_checkable
 
 import cvxpy as cp
 import numpy as np
 from scipy.optimize import LinearConstraint
-from typing_extensions import Protocol, runtime_checkable
 
 from .api import Optimizer
 

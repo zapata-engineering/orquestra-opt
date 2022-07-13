@@ -3,9 +3,17 @@
 ################################################################################
 """Main implementation of the recorder."""
 import copy
-from typing import Any, Callable, Dict, Generic, List, NamedTuple, TypeVar, Union
-
-from typing_extensions import overload
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    NamedTuple,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from ..api.functions import (
     CallableStoringArtifacts,
