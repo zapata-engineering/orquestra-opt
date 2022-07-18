@@ -6,6 +6,7 @@ from typing import List, Tuple
 
 import networkx as nx
 from orquestra.quantum.openfermion import QubitOperator
+from orquestra.quantum.wip.operators import PauliSum
 
 from ._problem_evaluation import (
     evaluate_solution,
@@ -15,7 +16,7 @@ from ._problem_evaluation import (
 
 class Problem(ABC):
     @abstractmethod
-    def _build_hamiltonian(self, graph: nx.Graph) -> QubitOperator:
+    def _build_hamiltonian(self, graph: nx.Graph) -> PauliSum:
         """
         This abstract method is implemented by the subclasses, and
         its goal is to encode the graph of the problem in the form
@@ -24,7 +25,7 @@ class Problem(ABC):
 
     def get_hamiltonian(
         self, graph: nx.Graph, scale_factor: float = 1.0, offset: float = 0.0
-    ) -> QubitOperator:
+    ) -> PauliSum:
         # Relabeling for monotonicity purposes
         num_nodes = range(len(graph.nodes))
         mapping = {node: new_label for node, new_label in zip(graph.nodes, num_nodes)}
@@ -32,7 +33,7 @@ class Problem(ABC):
 
         hamiltonian = self._build_hamiltonian(graph)
 
-        hamiltonian.compress()
+        # hamiltonian.compress() # pauli sums do not have the compress method that qubit ops do.
 
         return hamiltonian * scale_factor + offset
 

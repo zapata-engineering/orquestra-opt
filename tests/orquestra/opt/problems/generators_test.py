@@ -2,10 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import pytest
-from orquestra.quantum.openfermion import QubitOperator, change_operator_type
-from orquestra.quantum.openfermion.utils import count_qubits
-
-from orquestra.opt.problems import MaxCut, get_random_ising_hamiltonian
+from orquestra.opt.problems import get_random_ising_hamiltonian
 
 
 class TestGetRandomIsingHamiltonian:
@@ -25,10 +22,8 @@ class TestGetRandomIsingHamiltonian:
 
         # Then
         # Some qubits may not be included due to randomness, thus the generated number
-        # of qubits may be less than `num_qubits`
-        assert (
-            count_qubits(change_operator_type(hamiltonian, QubitOperator)) <= num_qubits
-        )
+        # of qubits must be less than or equal to `num_qubits`
+        assert max(hamiltonian.qubits) <= num_qubits
         generated_num_terms = len(hamiltonian.terms) - 1
 
         # If two of the randomly generated terms have the same qubits that are operated
@@ -36,17 +31,18 @@ class TestGetRandomIsingHamiltonian:
         # terms may be less than `num_terms`
         assert generated_num_terms <= num_terms
 
-    @pytest.mark.parametrize("max_num_terms_per_qubit", [2, 4])
-    def test_random_hamiltonian_max_num_terms_per_qubit(self, max_num_terms_per_qubit):
+    @pytest.mark.parametrize("max_num_qubits_per_term", [2, 4])
+    def test_random_hamiltonian_max_num_qubits_per_term(self, max_num_qubits_per_term):
         # Given
         num_qubits = 5
         num_terms = 3
 
         # When
         hamiltonian = get_random_ising_hamiltonian(
-            num_qubits, num_terms, max_num_terms_per_qubit
+            num_qubits, num_terms, max_num_qubits_per_term
         )
 
         # Then
-        for term in hamiltonian.terms.keys():
-            assert len(term) <= max_num_terms_per_qubit
+        for term in hamiltonian.terms:
+            # Each term must have at most `max_num_qubits_per_term` operators (qubits)
+            assert len(term._ops) <= max_num_qubits_per_term

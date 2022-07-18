@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from orquestra.quantum.openfermion import QubitOperator
+from orquestra.quantum.wip.operators import PauliSum, PauliTerm
 
 from ..api.problem import Problem
 
@@ -20,7 +20,7 @@ class MaxCut(Problem):
     Cut Problem" eq. 1 (https://arxiv.org/pdf/1811.08419.pdf).
     """
 
-    def _build_hamiltonian(self, graph: nx.Graph) -> QubitOperator:
+    def _build_hamiltonian(self, graph: nx.Graph) -> PauliSum:
         """Converts a MAXCUT instance, as described by a weighted graph, to an Ising
         Hamiltonian. It allows for different convention in the choice of the
         Hamiltonian. The returned Hamiltonian is consistent with the definitions from
@@ -38,7 +38,7 @@ class MaxCut(Problem):
         Args:
             graph: undirected weighted graph defining the problem
         """
-        hamiltonian = QubitOperator()
+        hamiltonian = PauliSum()
         shift = 0.0
 
         for i, j in graph.edges:
@@ -47,7 +47,7 @@ class MaxCut(Problem):
             except KeyError:
                 weight = 1
 
-            hamiltonian += weight * QubitOperator(f"Z{i} Z{j}")
+            hamiltonian += PauliTerm({i: "Z", j: "Z"}, weight)
             shift -= weight
 
         return 0.5 * (hamiltonian + shift)

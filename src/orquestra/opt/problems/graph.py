@@ -4,7 +4,6 @@
 # TODO : Remove everythin in this file
 import itertools
 import random
-import warnings
 from typing import Iterator, Optional, Sequence, TypeVar
 
 import networkx as nx

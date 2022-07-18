@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from orquestra.quantum.openfermion import QubitOperator
+from orquestra.quantum.wip.operators import PauliSum, PauliTerm
 
 from ..api.problem import Problem
 
@@ -19,7 +19,7 @@ class GraphPartitioning(Problem):
     (https://arxiv.org/pdf/1302.5843.pdf).
     """
 
-    def _build_hamiltonian(self, graph: nx.Graph) -> QubitOperator:
+    def _build_hamiltonian(self, graph: nx.Graph) -> PauliSum:
         """Construct a qubit operator with Hamiltonian for the graph partition problem.
 
         The returned Hamiltonian is consistent with the definitions from
@@ -33,14 +33,14 @@ class GraphPartitioning(Problem):
         Args:
             graph: undirected weighted graph defining the problem
         """
-        ham_a = QubitOperator()
+        ham_a = PauliSum()
         for i in graph.nodes:
-            ham_a += QubitOperator(f"Z{i}")
+            ham_a += PauliTerm(f"Z{i}")
         ham_a = ham_a**2
 
-        ham_b = QubitOperator()
+        ham_b = PauliSum()
         for i, j in graph.edges:
-            ham_b += 1 - QubitOperator(f"Z{i} Z{j}")
-        ham_b /= 2
+            ham_b += 1 - PauliTerm.from_list([("Z", i), ("Z", j)])
+        ham_b *= 0.5
 
         return ham_a + ham_b
