@@ -100,7 +100,9 @@ def _validate_optimizer_records_history_if_keep_history_is_true(optimizer):
     # To check that history is recorded correctly, we wrap cost_function
     # with a recorder. Optimizer should wrap it a second time and
     # therefore we can compare two histories to see if they agree.
-    cost_function = recorder(sum_x_squared)
+    cost_function = recorder(
+        FunctionWithGradient(sum_x_squared, finite_differences_gradient(sum_x_squared))
+    )
 
     result = optimizer.minimize(cost_function, np.array([-1, 1]), keep_history=True)
 
@@ -149,13 +151,19 @@ def _validate_gradients_history_is_recorded_if_keep_history_is_true(optimizer):
 
 
 def _validate_optimizer_does_not_record_history_if_keep_history_is_false(optimizer):
-    result = optimizer.minimize(sum_x_squared, np.array([-2, 0.5]), keep_history=False)
+    cost_function = FunctionWithGradient(
+        sum_x_squared, finite_differences_gradient(sum_x_squared)
+    )
+    result = optimizer.minimize(cost_function, np.array([-2, 0.5]), keep_history=False)
 
     return result.history == []
 
 
 def _validate_optimizer_does_not_record_history_by_default(optimizer):
-    result = optimizer.minimize(sum_x_squared, np.array([-2, 0.5]))
+    cost_function = FunctionWithGradient(
+        sum_x_squared, finite_differences_gradient(sum_x_squared)
+    )
+    result = optimizer.minimize(cost_function, np.array([-2, 0.5]))
 
     return result.history == []
 
