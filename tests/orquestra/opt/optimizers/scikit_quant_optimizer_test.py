@@ -2,14 +2,14 @@ import numpy as np
 import pytest
 
 from orquestra.opt.api.optimizer_test import (
-    sum_x_squared,
+    _validate_changing_keep_history_does_not_change_results,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_by_default,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_records_history_if_keep_history_is_true,
     _validate_optimizer_succeeds_on_cost_function_without_gradient,
     _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
-    _validate_optimizer_records_history_if_keep_history_is_true,
-    _validate_gradients_history_is_recorded_if_keep_history_is_true,
-    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
-    _validate_optimizer_does_not_record_history_by_default,
-    _validate_changing_keep_history_does_not_change_results,
+    sum_x_squared,
 )
 from orquestra.opt.optimizers.scikit_quant_optimizer import ScikitQuantOptimizer
 

@@ -7,19 +7,18 @@ import pytest
 from orquestra.opt.api import FunctionWithGradient
 from orquestra.opt.api.optimizer_test import (
     MANDATORY_OPTIMIZATION_RESULT_FIELDS,
-    sum_x_squared,
+    _validate_changing_keep_history_does_not_change_results,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_by_default,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_records_history_if_keep_history_is_true,
     _validate_optimizer_succeeds_on_cost_function_without_gradient,
     _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
     _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
-    _validate_optimizer_records_history_if_keep_history_is_true,
-    _validate_gradients_history_is_recorded_if_keep_history_is_true,
-    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
-    _validate_optimizer_does_not_record_history_by_default,
-    _validate_changing_keep_history_does_not_change_results,
+    sum_x_squared,
 )
 from orquestra.opt.gradients import finite_differences_gradient
 from orquestra.opt.optimizers.qiskit_optimizer import QiskitOptimizer
-
 
 CONTRACTS_THAT_DONT_TEST_RESULT_VALUES = [
     _validate_optimizer_records_history_if_keep_history_is_true,

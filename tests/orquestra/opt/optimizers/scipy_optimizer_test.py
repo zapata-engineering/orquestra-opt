@@ -7,8 +7,8 @@ import pytest
 from orquestra.opt.api import FunctionWithGradient
 from orquestra.opt.api.optimizer_test import (
     OPTIMIZER_CONTRACTS,
-    sum_x_squared,
     rosenbrock_function,
+    sum_x_squared,
 )
 from orquestra.opt.gradients import finite_differences_gradient
 from orquestra.opt.optimizers.scipy_optimizer import ScipyOptimizer
