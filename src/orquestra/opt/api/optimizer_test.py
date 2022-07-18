@@ -47,7 +47,7 @@ Basic usage pattern:
         def test_optimizer_satisfies_contracts(self, contract):
             optimizer = ...
             assert contract(optimizer)
-        
+
         def test_some_new_feature(self, optimizer): # new test
             ....
 
@@ -105,6 +105,8 @@ def _validate_optimizer_records_history_if_keep_history_is_true(optimizer):
     )
 
     result = optimizer.minimize(cost_function, np.array([-1, 1]), keep_history=True)
+    if len(result.history) != len(cost_function.history):
+        return False
 
     for result_history_entry, cost_function_history_entry in zip(
         result.history, cost_function.history
@@ -131,7 +133,10 @@ def _validate_gradients_history_is_recorded_if_keep_history_is_true(optimizer):
     )
 
     result = optimizer.minimize(cost_function, np.array([-1, 1]), keep_history=True)
-    assert len(result.gradient_history) == len(cost_function.gradient.history)
+    if "gradient_history" not in result:
+        return False
+    if len(result.gradient_history) != len(cost_function.gradient.history):
+        return False
 
     for result_history_entry, cost_function_history_entry in zip(
         result.gradient_history, cost_function.gradient.history
