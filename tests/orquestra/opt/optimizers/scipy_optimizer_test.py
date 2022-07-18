@@ -5,7 +5,11 @@ import numpy as np
 import pytest
 
 from orquestra.opt.api import FunctionWithGradient
-from orquestra.opt.api.optimizer_test import OptimizerTests
+from orquestra.opt.api.optimizer_test import (
+    OPTIMIZER_CONTRACTS,
+    sum_x_squared,
+    rosenbrock_function,
+)
 from orquestra.opt.gradients import finite_differences_gradient
 from orquestra.opt.optimizers.scipy_optimizer import ScipyOptimizer
 
@@ -35,15 +39,12 @@ def optimizer_with_bounds(request):
     return ScipyOptimizer(bounds=bounds, **request.param)
 
 
-@pytest.fixture(params=[True, False])
-def keep_history(request):
-    return request.param
+class TestScipyOptimizer:
+    @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
+    def test_optimizer_satisfies_contracts(self, contract, optimizer):
+        assert contract(optimizer)
 
-
-class TestScipyOptimizer(OptimizerTests):
-    def test_optimizers_work_with_bounds_provided(
-        self, optimizer_with_bounds, sum_x_squared
-    ):
+    def test_optimizers_work_with_bounds_provided(self, optimizer_with_bounds):
 
         # Given
         cost_function = FunctionWithGradient(
@@ -63,7 +64,7 @@ class TestScipyOptimizer(OptimizerTests):
         assert results.opt_value == pytest.approx(target_value, abs=1e-3)
         assert results.opt_params == pytest.approx(target_params, abs=1e-3)
 
-    def test_SLSQP_with_equality_constraints(self, sum_x_squared, rosenbrock_function):
+    def test_SLSQP_with_equality_constraints(self):
         # Given
         cost_function = FunctionWithGradient(
             rosenbrock_function, finite_differences_gradient(rosenbrock_function)
@@ -83,7 +84,7 @@ class TestScipyOptimizer(OptimizerTests):
         assert results.opt_value == pytest.approx(target_value, abs=1e-3)
         assert results.opt_params == pytest.approx(target_params, abs=1e-3)
 
-    def test_SLSQP_with_inequality_constraints(self, rosenbrock_function):
+    def test_SLSQP_with_inequality_constraints(self):
         # Given
         cost_function = FunctionWithGradient(
             rosenbrock_function, finite_differences_gradient(rosenbrock_function)

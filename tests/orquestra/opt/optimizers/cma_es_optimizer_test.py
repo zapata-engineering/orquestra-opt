@@ -3,7 +3,7 @@
 ################################################################################
 import pytest
 
-from orquestra.opt.api.optimizer_test import OptimizerTests
+from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
 from orquestra.opt.mock_objects import mock_cost_function
 from orquestra.opt.optimizers.cma_es_optimizer import CMAESOptimizer
 
@@ -13,12 +13,11 @@ def optimizer():
     return CMAESOptimizer(sigma_0=0.1)
 
 
-@pytest.fixture(params=[True, False])
-def keep_history(request):
-    return request.param
+class TestCMAESOptimizer:
+    @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
+    def test_optimizer_satisfies_contracts(self, contract, optimizer):
+        assert contract(optimizer)
 
-
-class TestCMAESOptimizer(OptimizerTests):
     def test_cmaes_specific_fields(self):
         results = CMAESOptimizer(
             sigma_0=0.1, options={"maxfevals": 99, "popsize": 5}
