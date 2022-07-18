@@ -28,9 +28,9 @@ CONTRACTS_THAT_DONT_TEST_RESULT_VALUES = [
 ]
 
 CONTRACTS_THAT_TEST_RESULT_VALUES = [
-    _validate_optimizer_succeeds_on_cost_function_without_gradient,
-    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
     _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
+    _validate_optimizer_succeeds_on_cost_function_without_gradient,
     _validate_changing_keep_history_does_not_change_results,
 ]
 

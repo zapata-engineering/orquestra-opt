@@ -56,20 +56,6 @@ perform tests for various configurations of your optimizer.
 """
 
 
-def _validate_optimizer_succeeds_with_optimizing_rosenbrock_function(optimizer):
-    cost_function = FunctionWithGradient(
-        rosenbrock_function, finite_differences_gradient(rosenbrock_function)
-    )
-
-    results = optimizer.minimize(cost_function, initial_params=np.array([0, 0]))
-
-    return (
-        results.opt_value == pytest.approx(0, abs=1e-4)
-        and results.opt_params == pytest.approx(np.ones(2), abs=1e-3)
-        and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
-    )
-
-
 def _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function(optimizer):
     cost_function = FunctionWithGradient(
         sum_x_squared, finite_differences_gradient(sum_x_squared)
@@ -80,6 +66,20 @@ def _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function(optimiz
     return (
         results.opt_value == pytest.approx(0, abs=1e-5)
         and results.opt_params == pytest.approx(np.zeros(2), abs=1e-4)
+        and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
+    )
+
+
+def _validate_optimizer_succeeds_with_optimizing_rosenbrock_function(optimizer):
+    cost_function = FunctionWithGradient(
+        rosenbrock_function, finite_differences_gradient(rosenbrock_function)
+    )
+
+    results = optimizer.minimize(cost_function, initial_params=np.array([0, 0]))
+
+    return (
+        results.opt_value == pytest.approx(0, abs=1e-4)
+        and results.opt_params == pytest.approx(np.ones(2), abs=1e-3)
         and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
     )
 
@@ -193,8 +193,8 @@ def _validate_changing_keep_history_does_not_change_results(optimizer):
 
 
 OPTIMIZER_CONTRACTS = [
-    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
     _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
     _validate_optimizer_succeeds_on_cost_function_without_gradient,
     _validate_optimizer_records_history_if_keep_history_is_true,
     _validate_gradients_history_is_recorded_if_keep_history_is_true,
