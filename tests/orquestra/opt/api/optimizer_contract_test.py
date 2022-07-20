@@ -9,10 +9,14 @@ import pytest
 from orquestra.opt.api import CostFunction
 from orquestra.opt.api.optimizer_test import (
     NESTED_OPTIMIZER_CONTRACTS,
+    _validate_changing_keep_history_does_not_change_results,
     _validate_gradients_history_is_recorded_if_keep_history_is_true,
     _validate_optimizer_does_not_record_history_by_default,
     _validate_optimizer_does_not_record_history_if_keep_history_is_false,
     _validate_optimizer_records_history_if_keep_history_is_true,
+    _validate_optimizer_succeeds_on_cost_function_without_gradient,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
 )
 from orquestra.opt.mock_objects import (
     MockNestedOptimizer,
@@ -20,13 +24,18 @@ from orquestra.opt.mock_objects import (
     mock_cost_function,
 )
 
-# Because MockOptimizer is not a precise optimizer, it cannot be used to validate the
-# contracts that test for accuracy of optimization result values.
 CONTRACTS_THAT_DONT_TEST_ACCURACY = [
     _validate_optimizer_records_history_if_keep_history_is_true,
     _validate_gradients_history_is_recorded_if_keep_history_is_true,
     _validate_optimizer_does_not_record_history_if_keep_history_is_false,
     _validate_optimizer_does_not_record_history_by_default,
+]
+
+CONTRACTS_THAT_TEST_ACCURACY = [
+    _validate_optimizer_succeeds_on_cost_function_without_gradient,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
+    _validate_changing_keep_history_does_not_change_results,
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
 ]
 
 
@@ -39,6 +48,8 @@ class MaliciousOptimizer(MockOptimizer):
             cost_function, initial_params, keep_history=keep_history
         )
         del results["nit"]
+        if keep_history:
+            results.opt_value += 2
         return results
 
 
@@ -51,6 +62,13 @@ class TestOptimizerContracts:
     def test_validates_contracts(self, contract):
         assert contract(_good_optimizer)
         assert not contract(_malicious_optimizer)
+
+    # Because MockOptimizer is not a precise optimizer, it cannot be used to validate
+    # the contracts that test for accuracy of optimization result values.
+    @pytest.mark.parametrize("contract", CONTRACTS_THAT_TEST_ACCURACY)
+    def test_validates_more_contracts(self, contract):
+        assert contract(_good_optimizer, accuracy=1)
+        assert not contract(_malicious_optimizer, accuracy=1)
 
 
 class MaliciousNestedOptimizer(MockNestedOptimizer):

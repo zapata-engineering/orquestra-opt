@@ -56,7 +56,9 @@ perform tests for various configurations of your optimizer.
 """
 
 
-def _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function(optimizer):
+def _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function(
+    optimizer, accuracy: float = 1e-5
+):
     cost_function = FunctionWithGradient(
         sum_x_squared, finite_differences_gradient(sum_x_squared)
     )
@@ -64,13 +66,15 @@ def _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function(optimiz
     results = optimizer.minimize(cost_function, initial_params=np.array([1, -1]))
 
     return (
-        results.opt_value == pytest.approx(0, abs=1e-5)
-        and results.opt_params == pytest.approx(np.zeros(2), abs=1e-4)
+        results.opt_value == pytest.approx(0, abs=accuracy)
+        and results.opt_params == pytest.approx(np.zeros(2), abs=accuracy * 10)
         and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
     )
 
 
-def _validate_optimizer_succeeds_with_optimizing_rosenbrock_function(optimizer):
+def _validate_optimizer_succeeds_with_optimizing_rosenbrock_function(
+    optimizer, accuracy: float = 1e-4
+):
     cost_function = FunctionWithGradient(
         rosenbrock_function, finite_differences_gradient(rosenbrock_function)
     )
@@ -78,19 +82,21 @@ def _validate_optimizer_succeeds_with_optimizing_rosenbrock_function(optimizer):
     results = optimizer.minimize(cost_function, initial_params=np.array([0, 0]))
 
     return (
-        results.opt_value == pytest.approx(0, abs=1e-4)
-        and results.opt_params == pytest.approx(np.ones(2), abs=1e-3)
+        results.opt_value == pytest.approx(0, abs=accuracy)
+        and results.opt_params == pytest.approx(np.ones(2), abs=accuracy * 10)
         and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
     )
 
 
-def _validate_optimizer_succeeds_on_cost_function_without_gradient(optimizer):
+def _validate_optimizer_succeeds_on_cost_function_without_gradient(
+    optimizer, accuracy: float = 1e-5
+):
     cost_function = sum_x_squared
 
     results = optimizer.minimize(cost_function, initial_params=np.array([1, -1]))
     return (
-        results.opt_value == pytest.approx(0, abs=1e-5)
-        and results.opt_params == pytest.approx(np.zeros(2), abs=1e-4)
+        results.opt_value == pytest.approx(0, abs=accuracy)
+        and results.opt_params == pytest.approx(np.zeros(2), abs=accuracy * 10)
         and all(field in results for field in MANDATORY_OPTIMIZATION_RESULT_FIELDS)
         and "gradient_history" not in results
     )
@@ -173,7 +179,9 @@ def _validate_optimizer_does_not_record_history_by_default(optimizer):
     return result.history == []
 
 
-def _validate_changing_keep_history_does_not_change_results(optimizer):
+def _validate_changing_keep_history_does_not_change_results(
+    optimizer, accuracy: float = 1e-5
+):
     cost_function = FunctionWithGradient(
         sum_x_squared, finite_differences_gradient(sum_x_squared)
     )
@@ -186,9 +194,9 @@ def _validate_changing_keep_history_does_not_change_results(optimizer):
     )
 
     return results_with_history.opt_value == pytest.approx(
-        results_without_history.opt_value, abs=1e-5
+        results_without_history.opt_value, abs=accuracy
     ) and results_without_history.opt_params == pytest.approx(
-        results_without_history.opt_params, abs=1e-4
+        results_without_history.opt_params, abs=accuracy * 10
     )
 
 
