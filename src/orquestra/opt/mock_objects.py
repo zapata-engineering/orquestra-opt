@@ -23,13 +23,17 @@ class MockOptimizer(Optimizer):
     def _minimize(
         self, cost_function, initial_params: np.ndarray, keep_history: bool = False
     ):
+        if keep_history:
+            cost_function = _recorder(cost_function)
         new_parameters = initial_params
         for i in range(len(initial_params)):
             new_parameters[i] += random.random()
         new_parameters = np.array(new_parameters)
+        opt_value = cost_function(new_parameters)
         return optimization_result(
-            opt_value=cost_function(new_parameters),
+            opt_value=opt_value,
             opt_params=new_parameters,
+            nit=1,
             nfev=1,
             **construct_history_info(cost_function, keep_history),
         )

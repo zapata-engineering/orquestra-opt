@@ -7,10 +7,32 @@ import pytest
 from orquestra.opt.api import FunctionWithGradient
 from orquestra.opt.api.optimizer_test import (
     MANDATORY_OPTIMIZATION_RESULT_FIELDS,
-    OptimizerTests,
+    _validate_changing_keep_history_does_not_change_results,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_by_default,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_records_history_if_keep_history_is_true,
+    _validate_optimizer_succeeds_on_cost_function_without_gradient,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+    sum_x_squared,
 )
 from orquestra.opt.gradients import finite_differences_gradient
 from orquestra.opt.optimizers.qiskit_optimizer import QiskitOptimizer
+
+CONTRACTS_THAT_DONT_TEST_RESULT_VALUES = [
+    _validate_optimizer_records_history_if_keep_history_is_true,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_does_not_record_history_by_default,
+]
+
+CONTRACTS_THAT_TEST_RESULT_VALUES = [
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+    _validate_optimizer_succeeds_with_optimizing_rosenbrock_function,
+    _validate_optimizer_succeeds_on_cost_function_without_gradient,
+    _validate_changing_keep_history_does_not_change_results,
+]
 
 
 @pytest.fixture(
@@ -86,10 +108,16 @@ def keep_history(request):
     return request.param
 
 
-class TestQiskitOptimizerTests(OptimizerTests):
-    def test_optimizer_succeeds_on_cost_function_without_gradient(
-        self, optimizer, sum_x_squared
-    ):
+class TestQiskitOptimizerTests:
+    @pytest.mark.parametrize("contract", CONTRACTS_THAT_TEST_RESULT_VALUES)
+    def test_optimizer_satisfies_contracts(self, contract, optimizer):
+        assert contract(optimizer)
+
+    @pytest.mark.parametrize("contract", CONTRACTS_THAT_DONT_TEST_RESULT_VALUES)
+    def test_optimizer_satisfies_more_contracts(self, contract, low_iter_optimizer):
+        assert contract(low_iter_optimizer)
+
+    def test_optimizer_succeeds_on_cost_function_without_gradient(self, optimizer):
         cost_function = sum_x_squared
 
         results = optimizer.minimize(cost_function, initial_params=np.array([1, -1]))
@@ -102,55 +130,33 @@ class TestQiskitOptimizerTests(OptimizerTests):
         assert "opt_params" in results
         assert "history" in results
 
-    def test_optimizer_records_history_if_keep_history_is_true(
-        self, low_iter_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_records_history_if_keep_history_is_true(
-            low_iter_optimizer, sum_x_squared
-        )
 
-    def test_optimizer_does_not_record_history_if_keep_history_is_set_to_false(
-        self, low_iter_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_does_not_record_history_if_keep_history_is_set_to_false(
-            low_iter_optimizer, sum_x_squared
-        )
-
-    def test_optimizer_does_not_record_history_by_default(
-        self, low_iter_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_does_not_record_history_by_default(
-            low_iter_optimizer, sum_x_squared
-        )
-
-
-class TestQiskitSinusoidalOptimizerTests(OptimizerTests):
+class TestQiskitSinusoidalOptimizerTests:
     """Some optimizers assume that the cost function can be expressed as a sum of
     products of sines and cosines (Eq. 12 of arXiv:1903.12166), a functional form which
     reflects the cost function of many variational quantum algorithms. Such optimizers
     may fail to find the minimum of cost functions that are not of this form.
 
-    This class removes the tests from the base class that check whether the optimizer
+    This class removes the tests from the contracts that check whether the optimizer
     finds the minimum of such non-sinusoidal cost functions, and replaces them with a
     test on a sinuisoidal cost function."""
+
+    @pytest.mark.parametrize("contract", CONTRACTS_THAT_DONT_TEST_RESULT_VALUES)
+    def test_optimizer_satisfies_contracts(
+        self, contract, low_iter_sinusoidal_optimizer
+    ):
+        assert contract(low_iter_sinusoidal_optimizer)
+
+    def test_changing_keep_history_does_not_change_results(self, sinusoidal_optimizer):
+        assert _validate_changing_keep_history_does_not_change_results(
+            sinusoidal_optimizer
+        )
 
     @pytest.fixture
     def sum_cos_x(self):
         """Create a sinuisoidal function whose minimum is at the origin with a value of
         zero."""
         return lambda x: -np.sum(np.cos(x)) + x.shape[0]
-
-    @pytest.mark.skip(reason="Optimizer only supports sinusoidal cost functions")
-    def test_optimizer_succeeds_with_optimizing_rosenbrock_function(self):
-        pass
-
-    @pytest.mark.skip(reason="Optimizer only supports sinusoidal cost functions")
-    def test_optimizer_succeeds_with_optimizing_sum_of_squares_function(self):
-        pass
-
-    @pytest.mark.skip(reason="Optimizer only supports sinusoidal cost functions")
-    def test_optimizer_succeeds_on_cost_function_without_gradient(self):
-        pass
 
     def test_optimizer_succeeds_on_sum_of_cosines_function(
         self, sinusoidal_optimizer, sum_cos_x, keep_history
@@ -171,24 +177,3 @@ class TestQiskitSinusoidalOptimizerTests(OptimizerTests):
 
         assert "history" in results or not keep_history
         assert "gradient_history" in results or not keep_history
-
-    def test_optimizer_records_history_if_keep_history_is_true(
-        self, low_iter_sinusoidal_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_records_history_if_keep_history_is_true(
-            low_iter_sinusoidal_optimizer, sum_x_squared
-        )
-
-    def test_optimizer_does_not_record_history_if_keep_history_is_set_to_false(
-        self, low_iter_sinusoidal_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_does_not_record_history_if_keep_history_is_set_to_false(
-            low_iter_sinusoidal_optimizer, sum_x_squared
-        )
-
-    def test_optimizer_does_not_record_history_by_default(
-        self, low_iter_sinusoidal_optimizer, sum_x_squared
-    ):
-        super().test_optimizer_does_not_record_history_by_default(
-            low_iter_sinusoidal_optimizer, sum_x_squared
-        )
