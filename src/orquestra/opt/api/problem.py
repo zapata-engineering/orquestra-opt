@@ -32,8 +32,6 @@ class Problem(ABC):
 
         hamiltonian = self._build_hamiltonian(graph)
 
-        # hamiltonian.compress() # pauli sums do not have the compress method that qubit ops do.
-
         return hamiltonian * scale_factor + offset
 
     def evaluate_solution(self, solution: Tuple[int], graph: nx.Graph) -> float:
