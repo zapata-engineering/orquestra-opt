@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from orquestra.quantum.openfermion import QubitOperator
+from orquestra.quantum.wip.operators import PauliSum, PauliTerm
 
 from ..api.problem import Problem
 
@@ -20,7 +20,7 @@ class MaxIndependentSet(Problem):
     (https://arxiv.org/pdf/1302.5843.pdf).
     """
 
-    def _build_hamiltonian(self, graph: nx.Graph) -> QubitOperator:
+    def _build_hamiltonian(self, graph: nx.Graph) -> PauliSum:
         """Construct a qubit operator with Hamiltonian for the maximum independent
         set problem.
 
@@ -31,12 +31,12 @@ class MaxIndependentSet(Problem):
         Args:
             graph: undirected weighted graph defining the problem
         """
-        ham_a = QubitOperator()
+        ham_a = PauliSum()
         for i, j in graph.edges:
-            ham_a += (1 - QubitOperator(f"Z{i}")) * (1 - QubitOperator(f"Z{j}"))
+            ham_a += (1 - PauliTerm(f"Z{i}")) * (1 - PauliTerm(f"Z{j}"))
 
-        ham_b = QubitOperator()
+        ham_b = PauliSum()
         for i in graph.nodes:
-            ham_b += QubitOperator(f"Z{i}")
+            ham_b += PauliTerm(f"Z{i}")
 
         return ham_a / 2 + ham_b / 2 - len(graph.nodes) / 2

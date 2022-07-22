@@ -2,6 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import pytest
+
 from orquestra.opt.problems import get_random_ising_hamiltonian
 
 

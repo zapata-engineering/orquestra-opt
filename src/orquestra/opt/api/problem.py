@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import networkx as nx
-from orquestra.quantum.openfermion import QubitOperator
 from orquestra.quantum.wip.operators import PauliSum
 
 from ._problem_evaluation import (

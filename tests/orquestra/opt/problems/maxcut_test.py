@@ -4,9 +4,9 @@
 import copy
 
 import pytest
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import MaxCut
-from orquestra.quantum.wip.operators import PauliSum, PauliTerm
 
 from ._helpers import make_graph
 

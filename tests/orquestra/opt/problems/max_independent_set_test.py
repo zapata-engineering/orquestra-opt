@@ -5,10 +5,9 @@ import copy
 
 import networkx as nx
 import pytest
-
-from orquestra.opt.problems import MaxIndependentSet
 from orquestra.quantum.wip.operators import PauliTerm
 
+from orquestra.opt.problems import MaxIndependentSet
 
 from ._helpers import graph_node_index, make_graph
 
