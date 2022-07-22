@@ -5,9 +5,31 @@ import numpy as np
 import pytest
 
 from orquestra.opt.api import function_with_gradient
-from orquestra.opt.api.optimizer_test import OptimizerTests
+from orquestra.opt.api.optimizer_test import (
+    _validate_changing_keep_history_does_not_change_results,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_by_default,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_records_history_if_keep_history_is_true,
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+)
 from orquestra.opt.gradients import finite_differences_gradient
 from orquestra.opt.optimizers.simple_gradient_descent import SimpleGradientDescent
+
+SIMPLE_GRADIENT_DESCENT_CONTRACTS = [
+    _validate_optimizer_succeeds_with_optimizing_sum_of_squares_function,
+    _validate_optimizer_records_history_if_keep_history_is_true,
+    _validate_gradients_history_is_recorded_if_keep_history_is_true,
+    _validate_optimizer_does_not_record_history_if_keep_history_is_false,
+    _validate_optimizer_does_not_record_history_by_default,
+    _validate_changing_keep_history_does_not_change_results,
+]
+# The following contracts are expected to fail, and thus omitted from this list:
+# _validate_optimizer_succeeds_with_optimizing_rosenbrock_function: This test fails
+# since the gradient of the rosenbrock function is too sensitive when using finite
+# differences
+# _validate_optimizer_succeeds_on_cost_function_without_gradient: This test fails since
+#  SimpleGradientDescent requires cost_function to have gradient method.
 
 
 @pytest.fixture(
@@ -22,12 +44,11 @@ def optimizer(request):
     return SimpleGradientDescent(**request.param)
 
 
-@pytest.fixture(params=[True, False])
-def keep_history(request):
-    return request.param
+class TestSimpleGradientDescent:
+    @pytest.mark.parametrize("contract", SIMPLE_GRADIENT_DESCENT_CONTRACTS)
+    def test_optimizer_satisfies_contracts(self, contract, optimizer):
+        assert contract(optimizer)
 
-
-class TestSimpleGradientDescent(OptimizerTests):
     @pytest.fixture
     def sum_x_squared(self):
         def _sum_x_squared(x):
@@ -35,22 +56,6 @@ class TestSimpleGradientDescent(OptimizerTests):
 
         return function_with_gradient(
             _sum_x_squared, finite_differences_gradient(_sum_x_squared)
-        )
-
-    def test_optimizer_succeeds_with_optimizing_rosenbrock_function(
-        self, optimizer, rosenbrock_function, keep_history
-    ):
-        pytest.xfail(
-            """This test fails since the gradient of the rosenbrock function "
-            "is too sensitive when using finite differences"""
-        )
-
-    def test_optimizer_succeeds_on_cost_function_without_gradient(
-        self, optimizer, sum_x_squared
-    ):
-        pytest.xfail(
-            """This test fails since TestSimpleGradientDescent requires cost_function "
-            "to have gradient method"""
         )
 
     def test_fails_to_initialize_when_number_of_iterations_is_negative(self):
