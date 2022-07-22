@@ -3,7 +3,7 @@
 ################################################################################
 import pytest
 
-from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
+from orquestra.opt.api.optimizer_test import OptimizerTests
 from orquestra.opt.optimizers.basin_hopping import BasinHoppingOptimizer
 
 
@@ -58,7 +58,10 @@ def optimizer(request):
     return BasinHoppingOptimizer(**request.param)
 
 
-class TestBasinHoppingOptimizer:
-    @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
-    def test_optimizer_satisfies_contracts(self, contract, optimizer):
-        assert contract(optimizer)
+@pytest.fixture(params=[True, False])
+def keep_history(request):
+    return request.param
+
+
+class TestBasinHoppingOptimizer(OptimizerTests):
+    pass

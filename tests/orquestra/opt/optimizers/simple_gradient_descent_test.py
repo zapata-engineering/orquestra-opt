@@ -22,6 +22,11 @@ def optimizer(request):
     return SimpleGradientDescent(**request.param)
 
 
+@pytest.fixture(params=[True, False])
+def keep_history(request):
+    return request.param
+
+
 class TestSimpleGradientDescent(OptimizerTests):
     @pytest.fixture
     def sum_x_squared(self):

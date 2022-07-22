@@ -27,6 +27,11 @@ def optimizer(request):
     return ScikitQuantOptimizer(**request.param)
 
 
+@pytest.fixture(params=[True, False])
+def keep_history(request):
+    return request.param
+
+
 class TestScikitQuantOptimizer(OptimizerTests):
     def test_optimizer_succeeds_with_optimizing_rosenbrock_function(
         self, optimizer, rosenbrock_function, keep_history

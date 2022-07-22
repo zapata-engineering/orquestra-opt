@@ -4,7 +4,7 @@
 import numpy as np
 import pytest
 
-from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
+from orquestra.opt.api.optimizer_test import OptimizerTests
 from orquestra.opt.optimizers.search_points_optimizer import SearchPointsOptimizer
 
 
@@ -36,11 +36,12 @@ def parameter_values_list(request):
     return request.param
 
 
-class TestSearchPointsOptimizer:
-    @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
-    def test_optimizer_satisfies_contracts(self, contract, optimizer):
-        assert contract(optimizer)
+@pytest.fixture(params=[True, False])
+def keep_history(request):
+    return request.param
 
+
+class TestSearchPointsOptimizer(OptimizerTests):
     @pytest.fixture()
     def optimizer(self, parameter_values_list):
         return SearchPointsOptimizer(parameter_values_list=parameter_values_list)
