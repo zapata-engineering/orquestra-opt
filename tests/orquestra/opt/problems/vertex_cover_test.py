@@ -183,7 +183,7 @@ class TestGetVertexCoverHamiltonian:
         expected_constant_term += (5 / 4) * len(graph.edges)
         expected_constant_term += 0.5 * len(graph.nodes)
 
-        constant_term = [term for term in pauli_sum.terms if term._ops == {}][0]
+        constant_term = [term for term in pauli_sum.terms if term.is_constant][0]
         assert constant_term.coefficient == expected_constant_term
 
 
