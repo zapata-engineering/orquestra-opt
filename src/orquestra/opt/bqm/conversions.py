@@ -7,13 +7,13 @@ import dimod
 import numpy as np
 from dimod import BinaryQuadraticModel, SampleSet
 from orquestra.quantum.measurements import Measurements
-from orquestra.quantum.openfermion import IsingOperator
+from orquestra.quantum.wip.operators import PauliTerm, PauliSum
 
 
-def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperator:
-    """Converts dimod BinaryQuadraticModel to OpenFermion IsingOperator object.
+def convert_qubo_to_paulisum(qubo: BinaryQuadraticModel) -> PauliSum:
+    """Converts dimod BinaryQuadraticModel to PauliSum object.
 
-    The resulting Openfermion IsingOperator has the following property: for every
+    The resulting PauliSum has the following property: for every
     bitstring, its expected value is the same as the energy of the original QUBO.
     In order to ensure this, we had to add a minus sign for the coefficients
     of the linear terms coming from dimod conversion.
@@ -24,26 +24,25 @@ def convert_qubo_to_openfermion_ising(qubo: BinaryQuadraticModel) -> IsingOperat
         qubo: Object we want to convert
 
     Returns:
-        IsingOperator: IsingOperator representation of the input qubo.
+        PauliSum: PauliSum representation of the input qubo.
 
     """
     linear_coeffs, quadratic_coeffs, offset = qubo.to_ising()
 
-    list_of_ising_strings = [f"{offset}[]"]
+    list_of_pauli_terms = [PauliTerm("I0", offset)]
 
     for i, value in linear_coeffs.items():
-        list_of_ising_strings.append(f"{-value}[Z{i}]")
+        list_of_pauli_terms.append(PauliTerm({i: "Z"}, -value))
 
     for (i, j), value in quadratic_coeffs.items():
-        list_of_ising_strings.append(f"{value}[Z{i} Z{j}]")
+        list_of_pauli_terms.append(PauliTerm({i: "Z", j: "Z"}, value))
 
-    ising_string = " + ".join(list_of_ising_strings)
-    return IsingOperator(ising_string)
+    return PauliSum(list_of_pauli_terms)
 
 
-def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadraticModel:
+def convert_paulisum_to_qubo(operator: PauliSum) -> BinaryQuadraticModel:
     """
-    Converts dimod Openfermion IsingOperator to BinaryQuadraticModel object.
+    Converts an ising PauliSum to dimod BinaryQuadraticModel object.
     The resulting QUBO has the following property:
     For every bitstring, its energy is the same as the expected value of the original
     Ising Hamiltonian. For more context about conventions used please refer to note in
@@ -54,26 +53,31 @@ def convert_openfermion_ising_to_qubo(operator: IsingOperator) -> BinaryQuadrati
         operations during conversion between Ising and QUBO models.
 
     Args:
-        operator: IsingOperator we want to convert
+        operator: PauliSum we want to convert
     Returns:
         qubo: BinaryQuadraticModel representation of the input operator
 
     """
 
-    if not isinstance(operator, IsingOperator):
-        raise TypeError(
-            f"Input is of type: {type(operator)}. Only Ising Operators are supported."
-        )
-    offset = 0
+    if not operator.is_ising:
+        raise TypeError("Input operator is not ising.")
+    offset = 0.0
     linear_terms = {}
     quadratic_terms = {}
-    for term, coeff in operator.terms.items():
-        if len(term) == 0:
+    for term in operator.terms:
+        if term.coefficient.imag != 0.0:
+            raise ValueError(
+                "PauliSum contains complex coefficients which are not "
+                " supported by BinaryQuadraticModel."
+            )
+        coeff = term.coefficient.real
+        if term.is_constant:
             offset = coeff
-        if len(term) == 1:
-            linear_terms[term[0][0]] = -coeff
+        qubits = list(term._ops.keys())
+        if len(qubits) == 1:
+            linear_terms[qubits[0]] = -coeff
         if len(term) == 2:
-            quadratic_terms[(term[0][0], term[1][0])] = coeff
+            quadratic_terms[(qubits[0], qubits[1])] = coeff
         if len(term) > 2:
             raise ValueError(
                 "Ising to QUBO conversion works only for quadratic Ising models."
