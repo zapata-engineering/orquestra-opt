@@ -2,22 +2,22 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import pytest
-from orquestra.quantum.openfermion import QubitOperator
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import solve_problem_by_exhaustive_search
 
 HAMILTONIAN_SOLUTION_COST_LIST = [
     (
-        QubitOperator("Z0 Z1") + QubitOperator("[]", -1),
+        PauliTerm.from_str("1*Z0*Z1") + PauliTerm("I0", -1),
         [(0, 1), (1, 0)],
         -2,
     ),
     (
-        QubitOperator("Z0 Z1", 5)
-        + QubitOperator("Z0 Z3", 5)
-        + QubitOperator("Z1 Z2", 0.5)
-        + QubitOperator("Z2 Z3", 0.5)
-        + QubitOperator("[]", -11),
+        PauliTerm.from_str("5*Z0*Z1")
+        + PauliTerm.from_str("5*Z0*Z3")
+        + PauliTerm.from_str("(0.5)*Z1*Z2")
+        + PauliTerm.from_str("(0.5)*Z2*Z3")
+        + PauliTerm("I0", -11),
         [(0, 1, 0, 1), (1, 0, 1, 0)],
         -22,
     ),

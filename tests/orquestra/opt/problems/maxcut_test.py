@@ -4,6 +4,7 @@
 import copy
 
 import pytest
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import MaxCut
 
@@ -12,38 +13,35 @@ from ._helpers import make_graph
 MONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=range(2), edges=[(0, 1)]),
-        {
-            (): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-        },
+        [PauliTerm("I0", -0.5), PauliTerm({0: "Z", 1: "Z"}, 0.5)],
     ),
     (
         make_graph(node_ids=range(3), edges=[(0, 1), (0, 2)]),
-        {
-            (): -1,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((0, "Z"), (2, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -1),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({0: "Z", 2: "Z"}, 0.5),
+        ],
     ),
     (
         make_graph(
             node_ids=range(4), edges=[(0, 1, 1), (0, 2, 2), (0, 3, 3)], use_weights=True
         ),
-        {
-            (): -3,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((0, "Z"), (2, "Z")): 1,
-            ((0, "Z"), (3, "Z")): 1.5,
-        },
+        [
+            PauliTerm("I0", -3),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({0: "Z", 2: "Z"}, 1),
+            PauliTerm({0: "Z", 3: "Z"}, 1.5),
+        ],
     ),
     (
         make_graph(node_ids=range(5), edges=[(0, 1), (1, 2), (3, 4)]),
-        {
-            (): -1.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((1, "Z"), (2, "Z")): 0.5,
-            ((3, "Z"), (4, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -1.5),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({1: "Z", 2: "Z"}, 0.5),
+            PauliTerm({3: "Z", 4: "Z"}, 0.5),
+        ],
     ),
 ]
 
@@ -54,12 +52,12 @@ GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST = [
             edges=[(0, 1, 1), (0, 2, 2), (0, 3, 3)],
             use_weights=True,
         ),
-        {
-            (): 1,
-            ((0, "Z"), (1, "Z")): 1,
-            ((0, "Z"), (2, "Z")): 2,
-            ((0, "Z"), (3, "Z")): 3,
-        },
+        [
+            PauliTerm("I0", 1),
+            PauliTerm({0: "Z", 1: "Z"}, 1),
+            PauliTerm({0: "Z", 2: "Z"}, 2),
+            PauliTerm({0: "Z", 3: "Z"}, 3),
+        ],
         2.0,
         7.0,
     ),
@@ -68,18 +66,15 @@ GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST = [
 NONMONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=[4, 2], edges=[(2, 4)]),
-        {
-            (): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-        },
+        [PauliTerm("I0", -0.5), PauliTerm({0: "Z", 1: "Z"}, 0.5)],
     ),
     (
         make_graph(node_ids="CBA", edges=[("C", "B"), ("C", "A")]),
-        {
-            (): -1,
-            ((0, "Z"), (1, "Z")): 0.5,  # the C-B edge
-            ((0, "Z"), (2, "Z")): 0.5,  # the C-A edge
-        },
+        [
+            PauliTerm("I0", -1),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),  # the C-B edge
+            PauliTerm({0: "Z", 2: "Z"}, 0.5),  # the C-A edge
+        ],
     ),
 ]
 
@@ -134,16 +129,16 @@ class TestGetMaxcutHamiltonian:
         ],
     )
     def test_returns_expected_terms(self, graph, terms):
-        qubit_operator = MaxCut().get_hamiltonian(graph)
-        assert qubit_operator.terms == terms
+        pauli_sum = MaxCut().get_hamiltonian(graph)
+        assert set(pauli_sum.terms) == set(terms)
 
     @pytest.mark.parametrize(
         "graph,terms,scale_factor,offset",
         [*GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST],
     )
     def test_scaling_and_offset_works(self, graph, terms, scale_factor, offset):
-        qubit_operator = MaxCut().get_hamiltonian(graph, scale_factor, offset)
-        assert qubit_operator.terms == terms
+        pauli_sum = MaxCut().get_hamiltonian(graph, scale_factor, offset)
+        assert set(pauli_sum.terms) == set(terms)
 
 
 class TestEvaluateMaxcutSolution:

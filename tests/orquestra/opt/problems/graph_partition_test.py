@@ -5,6 +5,7 @@ import copy
 
 import networkx as nx
 import pytest
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import GraphPartitioning
 
@@ -13,62 +14,59 @@ from ._helpers import graph_node_index, make_graph
 MONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=range(2), edges=[(0, 1)]),
-        {
-            (): 2.5,
-            ((0, "Z"), (1, "Z")): 1.5,
-        },
+        [PauliTerm("I0", 2.5), PauliTerm({0: "Z", 1: "Z"}, 1.5)],
     ),
     (
         make_graph(node_ids=range(3), edges=[(0, 1), (0, 2)]),
-        {
-            (): 4,
-            ((0, "Z"), (1, "Z")): 1.5,
-            ((0, "Z"), (2, "Z")): 1.5,
-            ((1, "Z"), (2, "Z")): 2.0,
-        },
+        [
+            PauliTerm("I0", 4),
+            PauliTerm({0: "Z", 1: "Z"}, 1.5),
+            PauliTerm({0: "Z", 2: "Z"}, 1.5),
+            PauliTerm({1: "Z", 2: "Z"}, 2.0),
+        ],
     ),
     (
         make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]),
-        {
-            (): 5.5,
-            ((0, "Z"), (1, "Z")): 1.5,
-            ((0, "Z"), (2, "Z")): 1.5,
-            ((0, "Z"), (3, "Z")): 1.5,
-            ((1, "Z"), (2, "Z")): 2,
-            ((1, "Z"), (3, "Z")): 2,
-            ((2, "Z"), (3, "Z")): 2,
-        },
+        [
+            PauliTerm("I0", 5.5),
+            PauliTerm({0: "Z", 1: "Z"}, 1.5),
+            PauliTerm({0: "Z", 2: "Z"}, 1.5),
+            PauliTerm({0: "Z", 3: "Z"}, 1.5),
+            PauliTerm({1: "Z", 2: "Z"}, 2.0),
+            PauliTerm({1: "Z", 3: "Z"}, 2.0),
+            PauliTerm({2: "Z", 3: "Z"}, 2.0),
+        ],
     ),
     (
         make_graph(node_ids=range(5), edges=[(0, 1), (1, 2), (3, 4)]),
-        {
-            (): 6.5,
-            ((0, "Z"), (1, "Z")): 1.5,
-            ((0, "Z"), (2, "Z")): 2,
-            ((0, "Z"), (3, "Z")): 2,
-            ((0, "Z"), (4, "Z")): 2,
-            ((1, "Z"), (2, "Z")): 1.5,
-            ((1, "Z"), (3, "Z")): 2,
-            ((1, "Z"), (4, "Z")): 2,
-            ((2, "Z"), (3, "Z")): 2,
-            ((2, "Z"), (4, "Z")): 2,
-            ((3, "Z"), (4, "Z")): 1.5,
-        },
+        [
+            PauliTerm("I0", 6.5),
+            PauliTerm({0: "Z", 1: "Z"}, 1.5),
+            PauliTerm({0: "Z", 2: "Z"}, 2),
+            PauliTerm({0: "Z", 3: "Z"}, 2),
+            PauliTerm({0: "Z", 4: "Z"}, 2),
+            PauliTerm({1: "Z", 2: "Z"}, 1.5),
+            PauliTerm({1: "Z", 3: "Z"}, 2),
+            PauliTerm({1: "Z", 4: "Z"}, 2),
+            PauliTerm({2: "Z", 3: "Z"}, 2),
+            PauliTerm({2: "Z", 4: "Z"}, 2),
+            PauliTerm({3: "Z", 4: "Z"}, 1.5),
+        ],
     ),
 ]
 
 GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST = [
     (
         make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]),
-        {
-            (): 18,
-            ((0, "Z"), (1, "Z")): 3,
-            ((0, "Z"), (2, "Z")): 3,
-            ((0, "Z"), (3, "Z")): 3,
-            ((1, "Z"), (2, "Z")): 4,
-            ((1, "Z"), (3, "Z")): 4,
-            ((2, "Z"), (3, "Z")): 4,
-        },
+        [
+            PauliTerm("I0", 18),
+            PauliTerm({0: "Z", 1: "Z"}, 3),
+            PauliTerm({0: "Z", 2: "Z"}, 3),
+            PauliTerm({0: "Z", 3: "Z"}, 3),
+            PauliTerm({1: "Z", 2: "Z"}, 4),
+            PauliTerm({1: "Z", 3: "Z"}, 4),
+            PauliTerm({2: "Z", 3: "Z"}, 4),
+        ],
         2.0,
         7.0,
     ),
@@ -77,19 +75,19 @@ GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST = [
 NONMONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=[4, 2], edges=[(2, 4)]),
-        {
-            (): 2.5,
-            ((0, "Z"), (1, "Z")): 1.5,
-        },
+        [
+            PauliTerm("I0", 2.5),
+            PauliTerm({0: "Z", 1: "Z"}, 1.5),
+        ],
     ),
     (
         make_graph(node_ids="CBA", edges=[("C", "B"), ("C", "A")]),
-        {
-            (): 4,
-            ((0, "Z"), (1, "Z")): 1.5,  # the C-B edge
-            ((0, "Z"), (2, "Z")): 1.5,  # the C-A edge
-            ((1, "Z"), (2, "Z")): 2.0,  # the B-C edge
-        },
+        [
+            PauliTerm("I0", 4),
+            PauliTerm({0: "Z", 1: "Z"}, 1.5),  # the C-B edge
+            PauliTerm({0: "Z", 2: "Z"}, 1.5),  # the C-A edge
+            PauliTerm({1: "Z", 2: "Z"}, 2.0),  # the B-C edge
+        ],
     ),
 ]
 
@@ -164,29 +162,30 @@ class TestGetGraphPartitionHamiltonian:
         ],
     )
     def test_returns_expected_terms(self, graph, terms):
-        qubit_operator = GraphPartitioning().get_hamiltonian(graph)
-        assert qubit_operator.terms == terms
+        pauli_sum = GraphPartitioning().get_hamiltonian(graph)
+        assert set(pauli_sum.terms) == set(terms)
 
     @pytest.mark.parametrize(
         "graph,terms,scale_factor,offset",
         [*GRAPH_OPERATOR_TERM_SCALING_OFFSET_LIST],
     )
     def test_scaling_and_offset_works(self, graph, terms, scale_factor, offset):
-        qubit_operator = GraphPartitioning().get_hamiltonian(
-            graph, scale_factor, offset
-        )
-        assert qubit_operator.terms == terms
+        pauli_sum = GraphPartitioning().get_hamiltonian(graph, scale_factor, offset)
+        assert set(pauli_sum.terms) == set(terms)
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
     def test_has_1_5_weight_on_edge_terms(self, graph: nx.Graph):
-        qubit_operator = GraphPartitioning().get_hamiltonian(graph)
+        pauli_sum = GraphPartitioning().get_hamiltonian(graph)
 
         for vertex_id1, vertex_id2 in graph.edges:
             qubit_index1 = graph_node_index(graph, vertex_id1)
             qubit_index2 = graph_node_index(graph, vertex_id2)
-            assert (
-                qubit_operator.terms[((qubit_index1, "Z"), (qubit_index2, "Z"))] == 1.5
-            )
+            edge_term = [
+                term
+                for term in pauli_sum.terms
+                if term.qubits == {qubit_index1, qubit_index2}
+            ][0]
+            assert edge_term.coefficient == 1.5
 
 
 class TestEvaluateGraphPartitionSolution:

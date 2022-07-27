@@ -4,12 +4,12 @@
 import dimod
 import numpy as np
 import pytest
-from orquestra.quantum.openfermion import IsingOperator
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.bqm.conversions import (
     convert_measurements_to_sampleset,
-    convert_openfermion_ising_to_qubo,
-    convert_qubo_to_openfermion_ising,
+    convert_paulisum_to_qubo,
+    convert_qubo_to_paulisum,
     convert_sampleset_to_measurements,
 )
 
@@ -23,8 +23,8 @@ def test_qubo_conversion_with_binary_fractions():
         -1,
         vartype=dimod.BINARY,
     )
-    ising = convert_qubo_to_openfermion_ising(qubo)
-    new_qubo = convert_openfermion_ising_to_qubo(ising)
+    ising = convert_qubo_to_paulisum(qubo)
+    new_qubo = convert_paulisum_to_qubo(ising)
     assert qubo == new_qubo
 
 
@@ -35,8 +35,8 @@ def test_qubo_conversion_with_non_binary_fractions():
         -1,
         vartype=dimod.BINARY,
     )
-    ising = convert_qubo_to_openfermion_ising(qubo)
-    new_qubo = convert_openfermion_ising_to_qubo(ising)
+    ising = convert_qubo_to_paulisum(qubo)
+    new_qubo = convert_paulisum_to_qubo(ising)
 
     assert len(qubo.linear) == len(new_qubo.linear)
     assert len(qubo.quadratic) == len(new_qubo.quadratic)
@@ -73,7 +73,7 @@ def test_converted_ising_evaluates_to_the_same_energy_as_original_qubo():
         [1, 1, 1],
     ]
 
-    ising = convert_qubo_to_openfermion_ising(qubo)
+    ising = convert_qubo_to_paulisum(qubo)
     for solution in all_solutions:
         qubo_energy = qubo.energy(solution)
         ising_energy = np.sum(
@@ -83,8 +83,14 @@ def test_converted_ising_evaluates_to_the_same_energy_as_original_qubo():
 
 
 def test_converted_qubo_evaluates_to_the_same_energy_as_original_ising():
-    ising = IsingOperator(
-        "2.5 [] + [Z0] + 2[Z0 Z1] +0.5[Z0 Z2] +[Z1] + 0.75[Z1 Z2] -[Z2]"
+    ising = (
+        PauliTerm("I0", 2.5)
+        + PauliTerm("Z0")
+        + PauliTerm({0: "Z", 1: "Z"}, 2)
+        + PauliTerm({0: "Z", 2: "Z"}, 0.5)
+        + PauliTerm("Z1")
+        + PauliTerm.from_str("0.75*Z1*Z2")
+        - PauliTerm("Z2")
     )
 
     all_solutions = [
@@ -98,7 +104,7 @@ def test_converted_qubo_evaluates_to_the_same_energy_as_original_ising():
         [1, 1, 1],
     ]
 
-    qubo = convert_openfermion_ising_to_qubo(ising)
+    qubo = convert_paulisum_to_qubo(ising)
     for solution in all_solutions:
         qubo_energy = qubo.energy(solution)
         ising_energy = np.sum(

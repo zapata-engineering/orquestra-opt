@@ -5,6 +5,7 @@ import copy
 
 import networkx as nx
 import pytest
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import MaxIndependentSet
 
@@ -13,58 +14,55 @@ from ._helpers import graph_node_index, make_graph
 MONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=range(2), edges=[(0, 1)]),
-        {
-            (): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-        },
+        [PauliTerm("I0", -0.5), PauliTerm({0: "Z", 1: "Z"}, 0.5)],
     ),
     (
         make_graph(node_ids=range(3), edges=[(0, 1), (0, 2)]),
-        {
-            (): -0.5,
-            ((0, "Z"),): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((0, "Z"), (2, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -0.5),
+            PauliTerm("Z0", -0.5),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({0: "Z", 2: "Z"}, 0.5),
+        ],
     ),
     (
         make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]),
-        {
-            (): -0.5,
-            ((0, "Z"),): -1,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((0, "Z"), (2, "Z")): 0.5,
-            ((0, "Z"), (3, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -0.5),
+            PauliTerm("Z0", -1),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({0: "Z", 2: "Z"}, 0.5),
+            PauliTerm({0: "Z", 3: "Z"}, 0.5),
+        ],
     ),
     (
         make_graph(node_ids=range(5), edges=[(0, 1), (1, 2), (3, 4)]),
-        {
-            (): -1,
-            ((1, "Z"),): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((1, "Z"), (2, "Z")): 0.5,
-            ((3, "Z"), (4, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -1),
+            PauliTerm("Z1", -0.5),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({1: "Z", 2: "Z"}, 0.5),
+            PauliTerm({3: "Z", 4: "Z"}, 0.5),
+        ],
     ),
 ]
 
 NONMONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=[4, 2], edges=[(2, 4)]),
-        {
-            (): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -0.5),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+        ],
     ),
     (
         make_graph(node_ids="CBA", edges=[("C", "B"), ("C", "A")]),
-        {
-            (): -0.5,
-            ((0, "Z"),): -0.5,
-            ((0, "Z"), (1, "Z")): 0.5,
-            ((0, "Z"), (2, "Z")): 0.5,
-        },
+        [
+            PauliTerm("I0", -0.5),
+            PauliTerm("Z0", -0.5),
+            PauliTerm({0: "Z", 1: "Z"}, 0.5),
+            PauliTerm({0: "Z", 2: "Z"}, 0.5),
+        ],
     ),
 ]
 
@@ -140,44 +138,54 @@ class TestGetMaxIndependentSetHamiltonian:
         ],
     )
     def test_returns_expected_terms(self, graph, terms):
-        qubit_operator = MaxIndependentSet().get_hamiltonian(graph)
-        assert qubit_operator.terms == terms
+        pauli_sum = MaxIndependentSet().get_hamiltonian(graph)
+        assert set(pauli_sum.terms) == set(terms)
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
-    def test_has__5_weight_on_edge_terms(self, graph: nx.Graph):
-        qubit_operator = MaxIndependentSet().get_hamiltonian(graph)
+    def test_has_5_weight_on_edge_terms(self, graph: nx.Graph):
+        pauli_sum = MaxIndependentSet().get_hamiltonian(graph)
 
         for vertex_id1, vertex_id2 in graph.edges:
             qubit_index1 = graph_node_index(graph, vertex_id1)
             qubit_index2 = graph_node_index(graph, vertex_id2)
-            assert (
-                qubit_operator.terms[((qubit_index1, "Z"), (qubit_index2, "Z"))] == 0.5
-            )
+            edge_term = [
+                term
+                for term in pauli_sum.terms
+                if term.qubits == {qubit_index1, qubit_index2}
+            ][0]
+            assert edge_term.coefficient == 0.5
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
-    def test_has_mod__5_weight_on_vertex_terms(self, graph: nx.Graph):
-        qubit_operator = MaxIndependentSet().get_hamiltonian(graph)
+    def test_has_mod_5_weight_on_vertex_terms(self, graph: nx.Graph):
+        pauli_sum = MaxIndependentSet().get_hamiltonian(graph)
 
         for vertex in graph.nodes:
             qubit_index = graph_node_index(graph, vertex)
-            try:
-                coefficient = qubit_operator.terms[((qubit_index, "Z"))]
-            except KeyError:
-                coefficient = 0
-            assert coefficient % 0.5 == 0
-            assert coefficient <= 0.5
+            vertex_term = next(
+                filter(lambda term: term.qubits == {qubit_index}, pauli_sum.terms), None
+            )
+            if vertex_term is None:
+                # There is no term with only an operator on this vertex qubit
+                coefficient = 0 + 0j
+            else:
+                coefficient = vertex_term.coefficient
+
+            assert coefficient.real % 0.5 == 0
+            assert coefficient.real <= 0.5
+            assert coefficient.imag == 0
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
     def test_has_correct_constant_term(self, graph: nx.Graph):
         expected_constant_term = 0.0
 
-        qubit_operator = MaxIndependentSet().get_hamiltonian(graph)
+        pauli_sum = MaxIndependentSet().get_hamiltonian(graph)
         for _ in graph.edges:
             expected_constant_term += 1 / 2
 
         expected_constant_term -= len(graph.nodes) / 2
 
-        assert qubit_operator.terms[()] == expected_constant_term
+        constant_term = [term for term in pauli_sum.terms if term.is_constant][0]
+        assert constant_term.coefficient == expected_constant_term
 
 
 class TestEvaluateMaxIndependentSetSolution:

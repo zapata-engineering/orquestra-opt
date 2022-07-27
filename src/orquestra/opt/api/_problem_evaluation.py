@@ -2,20 +2,19 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 from functools import partial
-from typing import Callable, List, Tuple, cast
+from typing import Callable, List, Tuple
 
 import networkx as nx
 import numpy as np
 from orquestra.quantum.measurements import Measurements, expectation_values_to_real
-from orquestra.quantum.openfermion import IsingOperator, change_operator_type
-from orquestra.quantum.openfermion.ops.operators.qubit_operator import QubitOperator
 from orquestra.quantum.openfermion.utils import count_qubits
 from orquestra.quantum.utils import dec2bin
+from orquestra.quantum.wip.operators import PauliSum
 
 
 # This is the only function in this file in the Public API
 def solve_problem_by_exhaustive_search(
-    hamiltonian: QubitOperator,
+    hamiltonian: PauliSum,
 ) -> Tuple[float, List[Tuple[int, ...]]]:
     """
     Solves any QAOA cost hamiltonian using exhaustive search.
@@ -104,7 +103,7 @@ def _solve_bitstring_problem_by_exhaustive_search(
 def evaluate_solution(
     solution: Tuple[int],
     graph: nx.Graph,
-    get_hamiltonian: Callable[[nx.Graph], QubitOperator],
+    get_hamiltonian: Callable[[nx.Graph], PauliSum],
 ) -> float:
     """Evaluate expectation value of hamiltonian for given solution of a graph problem.
 
@@ -125,7 +124,7 @@ def evaluate_solution(
 
 
 def _evaluate_solution_for_hamiltonian(
-    solution: Tuple[int], hamiltonian: QubitOperator
+    solution: Tuple[int], hamiltonian: PauliSum
 ) -> float:
     """Evaluates a solution of a hamiltonian by its calculating expectation value.
 
@@ -136,11 +135,7 @@ def _evaluate_solution_for_hamiltonian(
     Returns:
         float: value of a solution.
     """
-    hamiltonian = change_operator_type(hamiltonian, IsingOperator)
-
     expectation_values = expectation_values_to_real(
-        Measurements([solution]).get_expectation_values(
-            cast(IsingOperator, hamiltonian)
-        )
+        Measurements([solution]).get_expectation_values(hamiltonian)
     )
     return sum(expectation_values.values)

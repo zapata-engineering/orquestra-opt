@@ -1,16 +1,14 @@
 ################################################################################
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
-from typing import Callable, Dict, List
 
-import networkx as nx
 import numpy as np
-from orquestra.quantum.openfermion import IsingOperator, QubitOperator
+from orquestra.quantum.wip.operators import PauliSum, PauliTerm
 
 
 def get_random_ising_hamiltonian(
     number_of_qubits: int, number_of_terms: int, max_number_of_qubits_per_term: int
-) -> IsingOperator:
+) -> PauliSum:
     """Generates a random Hamiltonian for a given number of qubits and terms with
     weights between -1 and 1.
 
@@ -22,8 +20,7 @@ def get_random_ising_hamiltonian(
         max_number_qubits_per_term: The maximum number of qubits for each term in the
             hamiltonian. Should be <= number_of_qubits.
     """
-    # Initiate hamiltonian with a random coefficient
-    hamiltonian = IsingOperator("", np.random.rand() * 2 - 1)
+    hamiltonian = PauliSum()
 
     # Add terms with random qubits
     for _ in range(number_of_terms):
@@ -31,8 +28,10 @@ def get_random_ising_hamiltonian(
         qubits = np.random.choice(
             range(number_of_qubits), num_qubits_in_term, replace=False
         )
-        hamiltonian += IsingOperator(
-            " ".join([f"Z{q}" for q in qubits]), np.random.rand() * 2 - 1
-        )
+        qubits.sort()
+        hamiltonian += PauliTerm.from_list([("Z", q) for q in qubits])
+
+    # Add constant term with a random coefficient
+    hamiltonian += PauliTerm("I0", np.random.rand() * 2 - 1)
 
     return hamiltonian

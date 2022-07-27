@@ -5,6 +5,7 @@ import copy
 
 import networkx as nx
 import pytest
+from orquestra.quantum.wip.operators import PauliTerm
 
 from orquestra.opt.problems import VertexCover
 
@@ -13,73 +14,73 @@ from ._helpers import graph_node_index, make_graph
 MONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=range(2), edges=[(0, 1)]),
-        {
-            (): 2.25,
-            ((0, "Z"),): -0.75,
-            ((1, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 2.25),
+            PauliTerm("Z0", -0.75),
+            PauliTerm("Z1", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+        ],
     ),
     (
         make_graph(node_ids=range(3), edges=[(0, 1), (0, 2)]),
-        {
-            (): 4,
-            ((0, "Z"),): -2,
-            ((1, "Z"),): -0.75,
-            ((2, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-            ((0, "Z"), (2, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 4),
+            PauliTerm("Z0", -2),
+            PauliTerm("Z1", -0.75),
+            PauliTerm("Z2", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+            PauliTerm({0: "Z", 2: "Z"}, 1.25),
+        ],
     ),
     (
         make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]),
-        {
-            (): 5.75,
-            ((0, "Z"),): -3.25,
-            ((1, "Z"),): -0.75,
-            ((2, "Z"),): -0.75,
-            ((3, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-            ((0, "Z"), (2, "Z")): 1.25,
-            ((0, "Z"), (3, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 5.75),
+            PauliTerm("Z0", -3.25),
+            PauliTerm("Z1", -0.75),
+            PauliTerm("Z2", -0.75),
+            PauliTerm("Z3", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+            PauliTerm({0: "Z", 2: "Z"}, 1.25),
+            PauliTerm({0: "Z", 3: "Z"}, 1.25),
+        ],
     ),
     (
         make_graph(node_ids=range(5), edges=[(0, 1), (1, 2), (3, 4)]),
-        {
-            (): 6.25,
-            ((0, "Z"),): -0.75,
-            ((1, "Z"),): -2,
-            ((2, "Z"),): -0.75,
-            ((3, "Z"),): -0.75,
-            ((4, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-            ((1, "Z"), (2, "Z")): 1.25,
-            ((3, "Z"), (4, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 6.25),
+            PauliTerm("Z0", -0.75),
+            PauliTerm("Z1", -2),
+            PauliTerm("Z2", -0.75),
+            PauliTerm("Z3", -0.75),
+            PauliTerm("Z4", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+            PauliTerm({1: "Z", 2: "Z"}, 1.25),
+            PauliTerm({3: "Z", 4: "Z"}, 1.25),
+        ],
     ),
 ]
 
 NONMONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
     (
         make_graph(node_ids=[4, 2], edges=[(2, 4)]),
-        {
-            (): 2.25,
-            ((0, "Z"),): -0.75,
-            ((1, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 2.25),
+            PauliTerm("Z0", -0.75),
+            PauliTerm("Z1", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+        ],
     ),
     (
         make_graph(node_ids="CBA", edges=[("C", "B"), ("C", "A")]),
-        {
-            (): 4,
-            ((0, "Z"),): -2,
-            ((1, "Z"),): -0.75,
-            ((2, "Z"),): -0.75,
-            ((0, "Z"), (1, "Z")): 1.25,
-            ((0, "Z"), (2, "Z")): 1.25,
-        },
+        [
+            PauliTerm("I0", 4),
+            PauliTerm("Z0", -2),
+            PauliTerm("Z1", -0.75),
+            PauliTerm("Z2", -0.75),
+            PauliTerm({0: "Z", 1: "Z"}, 1.25),
+            PauliTerm({0: "Z", 2: "Z"}, 1.25),
+        ],
     ),
 ]
 
@@ -156,30 +157,34 @@ class TestGetVertexCoverHamiltonian:
         ],
     )
     def test_returns_expected_terms(self, graph, terms):
-        qubit_operator = VertexCover().get_hamiltonian(graph)
-        assert qubit_operator.terms == terms
+        pauli_sum = VertexCover().get_hamiltonian(graph)
+        assert set(pauli_sum.terms) == set(terms)
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
     def test_has_1_25_weight_on_edge_terms(self, graph: nx.Graph):
-        qubit_operator = VertexCover().get_hamiltonian(graph)
+        pauli_sum = VertexCover().get_hamiltonian(graph)
 
         for vertex_id1, vertex_id2 in graph.edges:
             qubit_index1 = graph_node_index(graph, vertex_id1)
             qubit_index2 = graph_node_index(graph, vertex_id2)
-            assert (
-                qubit_operator.terms[((qubit_index1, "Z"), (qubit_index2, "Z"))] == 1.25
-            )
+            edge_term = [
+                term
+                for term in pauli_sum.terms
+                if term._ops == {qubit_index1: "Z", qubit_index2: "Z"}
+            ][0]
+            assert edge_term.coefficient == 1.25
 
     @pytest.mark.parametrize("graph", GRAPH_EXAMPLES)
     def test_has_correct_constant_term(self, graph: nx.Graph):
         expected_constant_term = 0.0
 
-        qubit_operator = VertexCover().get_hamiltonian(graph)
+        pauli_sum = VertexCover().get_hamiltonian(graph)
 
         expected_constant_term += (5 / 4) * len(graph.edges)
         expected_constant_term += 0.5 * len(graph.nodes)
 
-        assert qubit_operator.terms[()] == expected_constant_term
+        constant_term = [term for term in pauli_sum.terms if term.is_constant][0]
+        assert constant_term.coefficient == expected_constant_term
 
 
 class TestEvaluateVertexCoverSolution:
