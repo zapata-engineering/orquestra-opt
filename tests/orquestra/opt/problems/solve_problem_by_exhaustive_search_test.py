@@ -8,15 +8,15 @@ from orquestra.opt.problems import solve_problem_by_exhaustive_search
 
 HAMILTONIAN_SOLUTION_COST_LIST = [
     (
-        PauliTerm.from_str("1*Z0*Z1") + PauliTerm("I0", -1),
+        PauliTerm("1*Z0*Z1") + PauliTerm("I0", -1),
         [(0, 1), (1, 0)],
         -2,
     ),
     (
-        PauliTerm.from_str("5*Z0*Z1")
-        + PauliTerm.from_str("5*Z0*Z3")
-        + PauliTerm.from_str("(0.5)*Z1*Z2")
-        + PauliTerm.from_str("(0.5)*Z2*Z3")
+        PauliTerm("5*Z0*Z1")
+        + PauliTerm("5*Z0*Z3")
+        + PauliTerm("(0.5)*Z1*Z2")
+        + PauliTerm("(0.5)*Z2*Z3")
         + PauliTerm("I0", -11),
         [(0, 1, 0, 1), (1, 0, 1, 0)],
         -22,

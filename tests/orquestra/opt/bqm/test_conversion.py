@@ -89,7 +89,7 @@ def test_converted_qubo_evaluates_to_the_same_energy_as_original_ising():
         + PauliTerm({0: "Z", 1: "Z"}, 2)
         + PauliTerm({0: "Z", 2: "Z"}, 0.5)
         + PauliTerm("Z1")
-        + PauliTerm.from_str("0.75*Z1*Z2")
+        + PauliTerm("0.75*Z1*Z2")
         - PauliTerm("Z2")
     )
 
