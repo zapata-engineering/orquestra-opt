@@ -170,7 +170,7 @@ class TestGetVertexCoverHamiltonian:
             edge_term = [
                 term
                 for term in pauli_sum.terms
-                if term._ops == {qubit_index1: "Z", qubit_index2: "Z"}
+                if term.operations == set([(qubit_index1, "Z"), (qubit_index2, "Z")])
             ][0]
             assert edge_term.coefficient == 1.25
 

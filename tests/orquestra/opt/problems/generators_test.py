@@ -46,4 +46,4 @@ class TestGetRandomIsingHamiltonian:
         # Then
         for term in hamiltonian.terms:
             # Each term must have at most `max_num_qubits_per_term` operators (qubits)
-            assert len(term._ops) <= max_num_qubits_per_term
+            assert len(term.operations) <= max_num_qubits_per_term
