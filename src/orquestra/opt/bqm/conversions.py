@@ -73,7 +73,7 @@ def convert_paulisum_to_qubo(operator: PauliSum) -> BinaryQuadraticModel:
         coeff = term.coefficient.real
         if term.is_constant:
             offset = coeff
-        qubits = list(term._ops.keys())
+        qubits = sorted(term.qubits)
         if len(qubits) == 1:
             linear_terms[qubits[0]] = -coeff
         if len(term) == 2:
