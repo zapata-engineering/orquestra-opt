@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from orquestra.quantum.wip.operators import PauliSum, PauliTerm
+from orquestra.quantum.operators import PauliSum, PauliTerm
 
 from ..api.problem import Problem
 

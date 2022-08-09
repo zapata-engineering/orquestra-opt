@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import pytest
-from orquestra.quantum.wip.operators import PauliTerm
+from orquestra.quantum.operators import PauliTerm
 
 from orquestra.opt.problems import solve_problem_by_exhaustive_search
 

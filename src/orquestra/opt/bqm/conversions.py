@@ -7,7 +7,7 @@ import dimod
 import numpy as np
 from dimod import BinaryQuadraticModel, SampleSet
 from orquestra.quantum.measurements import Measurements
-from orquestra.quantum.wip.operators import PauliSum, PauliTerm
+from orquestra.quantum.operators import PauliSum, PauliTerm
 
 
 def convert_qubo_to_paulisum(qubo: BinaryQuadraticModel) -> PauliSum:

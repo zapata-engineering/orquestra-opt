@@ -7,9 +7,8 @@ from typing import Callable, List, Tuple
 import networkx as nx
 import numpy as np
 from orquestra.quantum.measurements import Measurements, expectation_values_to_real
-from orquestra.quantum.openfermion.utils import count_qubits
+from orquestra.quantum.operators import PauliSum
 from orquestra.quantum.utils import dec2bin
-from orquestra.quantum.wip.operators import PauliSum
 
 
 # This is the only function in this file in the Public API
@@ -34,7 +33,7 @@ def solve_problem_by_exhaustive_search(
 
     return _solve_bitstring_problem_by_exhaustive_search(
         partial(cost_function, hamiltonian=hamiltonian),
-        num_nodes=count_qubits(hamiltonian),
+        num_nodes=hamiltonian.n_qubits,
     )
 
 

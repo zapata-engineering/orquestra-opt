@@ -4,7 +4,7 @@
 import copy
 
 import pytest
-from orquestra.quantum.wip.operators import PauliTerm
+from orquestra.quantum.operators import PauliTerm
 
 from orquestra.opt.problems import MaxCut
 

@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import networkx as nx
-from orquestra.quantum.wip.operators import PauliSum
+from orquestra.quantum.operators import PauliSum
 
 from ._problem_evaluation import (
     evaluate_solution,
