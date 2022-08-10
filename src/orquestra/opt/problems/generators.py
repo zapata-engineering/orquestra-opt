@@ -3,7 +3,7 @@
 ################################################################################
 
 import numpy as np
-from orquestra.quantum.wip.operators import PauliSum, PauliTerm
+from orquestra.quantum.operators import PauliSum, PauliTerm
 
 
 def get_random_ising_hamiltonian(
@@ -29,7 +29,7 @@ def get_random_ising_hamiltonian(
             range(number_of_qubits), num_qubits_in_term, replace=False
         )
         qubits.sort()
-        hamiltonian += PauliTerm.from_list([("Z", q) for q in qubits])
+        hamiltonian += PauliTerm.from_iterable([("Z", q) for q in qubits])
 
     # Add constant term with a random coefficient
     hamiltonian += PauliTerm("I0", np.random.rand() * 2 - 1)

@@ -4,7 +4,7 @@
 import dimod
 import numpy as np
 import pytest
-from orquestra.quantum.wip.operators import PauliTerm
+from orquestra.quantum.operators import PauliTerm
 
 from orquestra.opt.bqm.conversions import (
     convert_measurements_to_sampleset,

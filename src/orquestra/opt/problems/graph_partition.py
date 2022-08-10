@@ -2,7 +2,7 @@
 # © Copyright 2021-2022 Zapata Computing Inc.
 ################################################################################
 import networkx as nx
-from orquestra.quantum.wip.operators import PauliSum, PauliTerm
+from orquestra.quantum.operators import PauliSum, PauliTerm
 
 from ..api.problem import Problem
 
@@ -40,7 +40,7 @@ class GraphPartitioning(Problem):
 
         ham_b = PauliSum()
         for i, j in graph.edges:
-            ham_b += 1 - PauliTerm.from_list([("Z", i), ("Z", j)])
+            ham_b += 1 - PauliTerm.from_iterable([("Z", i), ("Z", j)])
         ham_b *= 0.5
 
         return ham_a + ham_b
