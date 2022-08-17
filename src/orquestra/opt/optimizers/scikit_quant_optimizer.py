@@ -1,3 +1,6 @@
+################################################################################
+# © Copyright 2022 Zapata Computing Inc.
+################################################################################
 import warnings
 from typing import Callable, List, Optional, Union
 
