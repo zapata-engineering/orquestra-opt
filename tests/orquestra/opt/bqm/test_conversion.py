@@ -77,7 +77,7 @@ def test_converted_ising_evaluates_to_the_same_energy_as_original_qubo():
     for solution in all_solutions:
         qubo_energy = qubo.energy(solution)
         ising_energy = np.sum(
-            Measurements([solution]).get_expectation_values(ising).values
+            Measurements([tuple(solution)]).get_expectation_values(ising).values
         )
         assert qubo_energy == ising_energy
 
@@ -108,7 +108,7 @@ def test_converted_qubo_evaluates_to_the_same_energy_as_original_ising():
     for solution in all_solutions:
         qubo_energy = qubo.energy(solution)
         ising_energy = np.sum(
-            Measurements([solution]).get_expectation_values(ising).values
+            Measurements([tuple(solution)]).get_expectation_values(ising).values
         )
         assert qubo_energy == ising_energy
 

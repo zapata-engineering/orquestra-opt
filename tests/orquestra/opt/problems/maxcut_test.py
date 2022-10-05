@@ -79,20 +79,20 @@ NONMONOTONIC_GRAPH_OPERATOR_TERM_PAIRS = [
 ]
 
 GRAPH_SOLUTION_COST_LIST = [
-    (make_graph(node_ids=range(2), edges=[(0, 1)]), [0, 0], 0),
-    (make_graph(node_ids=range(2), edges=[(0, 1)]), [0, 1], -1),
+    (make_graph(node_ids=range(2), edges=[(0, 1)]), (0, 0), 0),
+    (make_graph(node_ids=range(2), edges=[(0, 1)]), (0, 1), -1),
     (
         make_graph(
             node_ids=range(4), edges=[(0, 1, 1), (0, 2, 2), (0, 3, 3)], use_weights=True
         ),
-        [1, 0, 0, 0],
+        (1, 0, 0, 0),
         -6,
     ),
-    (make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]), [0, 0, 1, 1], -2),
-    (make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]), [0, 1, 1, 1], -3),
+    (make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]), (0, 0, 1, 1), -2),
+    (make_graph(node_ids=range(4), edges=[(0, 1), (0, 2), (0, 3)]), (0, 1, 1, 1), -3),
     (
         make_graph(node_ids=range(5), edges=[(0, 1), (1, 2), (3, 4)]),
-        [1, 1, 1, 1, 1],
+        (1, 1, 1, 1, 1),
         0,
     ),
 ]
@@ -151,10 +151,12 @@ class TestEvaluateMaxcutSolution:
     def test_evaluate_maxcut_solution_with_invalid_input(
         self, graph, solution, target_value
     ):
-        too_long_solution = solution + [1]
+        too_long_solution = solution + (1,)
         too_short_solution = solution[:-1]
         invalid_value_solution = copy.copy(solution)
+        invalid_value_solution = list(invalid_value_solution)
         invalid_value_solution[0] = -1
+        invalid_value_solution = tuple(invalid_value_solution)
         invalid_solutions = [
             too_long_solution,
             too_short_solution,
