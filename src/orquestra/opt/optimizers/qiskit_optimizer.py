@@ -66,19 +66,16 @@ class QiskitOptimizer(Optimizer):
         Returns:
             optimization_results: results of the optimization.
         """
-
-        number_of_variables = len(initial_params)
-
         gradient_function = None
         if isinstance(cost_function, CallableWithGradient):
             gradient_function = cost_function.gradient
 
-        solution, value, nfev = self.optimizer.optimize(
-            num_vars=number_of_variables,
-            objective_function=cost_function,
-            initial_point=initial_params,
-            gradient_function=gradient_function,
+        result = self.optimizer.minimize(
+            fun=cost_function,
+            x0=initial_params,
+            jac=gradient_function,
         )
+        solution, value, nfev = result.x, result.fun, result.nfev
 
         if self.method == "ADAM" or self.method == "AMSGRAD":
             nit = self.optimizer._t
