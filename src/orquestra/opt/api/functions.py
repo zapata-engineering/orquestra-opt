@@ -43,7 +43,7 @@ class CallableWithGradient(Protocol):
 class CallableStoringArtifacts(Protocol[S, T]):
     """A callable that stores artifacts."""
 
-    def __call__(self, params: S, store_artifact: Optional[StoreArtifact]) -> T:
+    def __call__(self, params: S, store_artifact: Optional[StoreArtifact] = None) -> T:
         pass
 
 
