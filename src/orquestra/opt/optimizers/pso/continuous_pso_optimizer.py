@@ -18,7 +18,25 @@ Bounds = Union[
 ]
 
 
-def _get_bounds_like_array(bounds: Bounds) -> np.ndarray:
+def _get_bounds_like_array(
+    bounds: Bounds,
+) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+    """
+    Casts a Bounds object to an object with two entries: the first being the lower bounds
+    and the second being the upper bounds.
+
+    Parameters
+    ----------
+    bounds : Bounds
+        A Bounds object, which can be a scipy.optimize.Bounds object, a sequence of tuples,
+        one tuple being the bonds per parameter, or a tuple of two floats, which are the
+        lower and upper bounds for all parameters.
+
+    Returns
+    -------
+    Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]
+        Lower and upper bounds.
+    """
     if isinstance(bounds, scipy.optimize.Bounds):
         return bounds.lb, bounds.ub
     else:
@@ -29,7 +47,6 @@ class PSOOptimizer(Optimizer):
     def __init__(
         self,
         swarm_size: int,
-        dimensions: int,
         bounds: Bounds,
         inertia: float,
         affinity_towards_best_particle_position: float,
@@ -44,6 +61,58 @@ class PSOOptimizer(Optimizer):
         seed: Optional[int] = None,
         recorder: RecorderFactory = _recorder,
     ):
+        """
+        Constructor of the Particle Swarm Optimizer for continuous variables.
+        When you call `.minimize`, the initial positions of the particles can be set using the
+        method `get_initial_params`, which by default samples uniformly from the parameter space.
+
+        Parameters
+        ----------
+        swarm_size : int
+            Number of particles in the swarm.
+        bounds : Bounds
+            A Bounds object, which can be a scipy.optimize.Bounds object, a sequence of tuples,
+            one tuple being the bonds per parameter, or a tuple of two floats, which are the
+            lower and upper bounds for all parameters.
+        inertia : float
+            Velocities of the particles keep a fraction of their previous value, which is the
+            inertia.
+        affinity_towards_best_particle_position : float
+            Dictates the scale of the affinity of a particle towards the best position it has
+            experienced in the past. The larger this is, the more the particle will be drawn
+            towards the best position it has seen.
+        affinity_towards_best_swarm_position : float
+            Dictates the scale of the affinity of a particle towards the best position the swarm
+            has experienced in the past. The larger this is, the more the particle will be drawn
+            towards the best position the swarm has seen.
+        patience : Optional[int], optional
+            Number of iterations that the optimizer will wait before stopping, if an improvement
+            of `delta` has not been made in the previous `patience` iterations, by default None.
+            If `None`, either `max_iterations` or `max_fevals` must be set.
+        delta : float, optional
+            Minimum improvement that the optimizer must experience in `patience` steps for it not
+            to stop. Valid only if `patience` is not None, by default 1e-10
+        max_iterations : Optional[int], optional
+            Maximum number of updates of the whole swarm. If None, either `max_fevals` or `patience`
+            must be set for the optimizer to stop, by default None
+        max_fevals : Optional[int], optional
+            Maximum number of function evaluations. If None, either `max_iterations` or `patience`
+            must be set for the optimizer to stop, by default None
+        learning_rate : float, optional
+            Velocities will be updated proportionally to the learning rate. Modifying this parameter
+            is equivalent to multiplying `inertia`, `affinity_towards_best_particle_position`
+            and `affinity_towards_best_swarm_position` altogether, by default 1.0
+        velocity_bounds : Optional[Bounds], optional
+            Velocity bounds which can avoid the velocity to explode. If None, no bounds are imposed,
+            by default None
+        topology_constructor : Callable[[int], SwarmTopology], optional
+            Class that receives the number of dimensions in the initialiser and creates a SwarmTopology,
+            by default StarTopology
+        seed : Optional[int], optional
+            Random seed for the numpy random number generator, by default None
+        recorder : RecorderFactory, optional
+            Recorder factory for keeping history of calls to the objective function, by default _recorder
+        """
         assert 0 < learning_rate <= 1.0, "Learning rate must be in (0, 1]."
         assert 0 < inertia <= 1, "Inertia must be in (0, 1]"
         assert (
@@ -66,82 +135,143 @@ class PSOOptimizer(Optimizer):
 
         # Other attributes:
         self.swarm_size = swarm_size
-        self.dimensions = dimensions
         self.random_number_generator = np.random.default_rng(seed)
         self.bounds = _get_bounds_like_array(bounds)
         self.scale = self.bounds[1] - self.bounds[0]
         self.shift = self.bounds[0]
-        self.positions = self.get_initial_params()
-        self.best_positions = self.positions.copy()
         self.function_at_best_positions = np.ones(swarm_size, dtype=float) * np.infty
-        self.topology = topology_constructor(dimensions)
         self.inertia = inertia
+        self.topology_constructor = topology_constructor
         self.affinity_towards_best_particle_position = (
             affinity_towards_best_particle_position
         )
         self.affinity_towards_best_swarm_position = affinity_towards_best_swarm_position
         self.learning_rate = learning_rate
-        self.velocities = self.random_number_generator.uniform(
-            0, 1, (swarm_size, dimensions)
+        self.velocity_bounds = velocity_bounds
+
+    def get_initial_velocities(self, dimensions: int) -> np.ndarray:
+        """
+        Initialises velocities for the particles in the swarm for a given number of
+        dimensions.
+
+        Parameters
+        ----------
+        dimensions : int
+            Number of dimensions of the problem.
+
+        Returns
+        -------
+        np.ndarray
+            (N, dimensions) array, where N is the swarm size.
+        """
+        velocities = self.random_number_generator.uniform(
+            0, 1, (self.swarm_size, dimensions)
         )
-        if velocity_bounds is None:
+        if self.velocity_bounds is None:
             self.velocity_bounds = None
-            self.velocities = 0.5 * (self.scale * self.velocities - self.shift)
+            velocities = 0.5 * (self.scale * velocities - self.shift)
         else:
-            self.velocity_bounds = _get_bounds_like_array(velocity_bounds)
+            self.velocity_bounds = _get_bounds_like_array(self.velocity_bounds)
             scale = self.velocity_bounds[1] - self.velocity_bounds[0]
             shift = self.velocity_bounds[0]
-            self.velocities = scale * self.velocities + shift
+            velocities = scale * velocities + shift
+        return velocities
 
-    def get_initial_params(self) -> np.ndarray:
+    def get_initial_params(self, dimensions: int) -> np.ndarray:
+        """
+        Uniformly samples the parameter space to initialise the particles in the swarm.
+
+        Parameters
+        ----------
+        dimensions : int
+            Number of dimensions of the problem.
+
+        Returns
+        -------
+        np.ndarray
+            (N, dimensions) array, where N is the swarm size.
+        """
         return (
             self.random_number_generator.uniform(
-                0, self.scale, (self.swarm_size, self.dimensions)
+                0, self.scale, (self.swarm_size, dimensions)
             )
             + self.shift
         )
 
-    def update_positions(self):
-        inertia_term = self.inertia * self.velocities
+    def update_positions(
+        self,
+        positions: np.ndarray,
+        velocities: np.ndarray,
+        best_positions: np.ndarray,
+        topology: SwarmTopology,
+    ) -> None:
+        """
+        In-place modification of the positions and velocities of the particles in the swarm.
+
+        Parameters
+        ----------
+        positions : np.ndarray
+            (N, D) array of the current positions of the particles in the swarm.
+        velocities : np.ndarray
+            (N, D) array of the current velocities of the particles in the swarm.
+        best_positions : np.ndarray
+            (N, D) array of the best positions the particles in the swarm that have been seen.
+        topology : SwarmTopology
+            Topology object that dictates the best swarm position.
+        """
+        dimensions = positions.shape[-1]
+        inertia_term = self.inertia * velocities
         # The affinity terms are quite random, as they change for every dimension, every particle and every
         # call to this function. Maybe we could have levels of randomness here.
         affinity_towards_best_particle_position_term = (
             self.random_number_generator.uniform(
                 0,
                 self.affinity_towards_best_particle_position,
-                (self.swarm_size, self.dimensions),
+                (self.swarm_size, dimensions),
             )
-            * np.subtract(self.best_positions, self.positions)
+            * np.subtract(best_positions, positions)
         )
         affinity_towards_best_swarm_position_term = (
             self.random_number_generator.uniform(
                 0,
                 self.affinity_towards_best_swarm_position,
-                (self.swarm_size, self.dimensions),
+                (self.swarm_size, dimensions),
             )
-            * np.subtract(self.topology.best_swarm_position, self.positions)
+            * np.subtract(topology.best_swarm_position, positions)
         )
-        self.velocities[:] = (
+        velocities[:] = (
             inertia_term
             + affinity_towards_best_particle_position_term
             + affinity_towards_best_swarm_position_term
         )
 
         if self.velocity_bounds is not None:
-            self.velocities[:] = np.clip(
-                self.velocities, self.velocity_bounds[0], self.velocity_bounds[1]
+            velocities[:] = np.clip(
+                velocities, self.velocity_bounds[0], self.velocity_bounds[1]
             )
-        self.positions[:] = self.positions + self.learning_rate * self.velocities
+        positions[:] = positions + self.learning_rate * velocities
 
     def _minimize(
         self,
         cost_function: CostFunction,
-        initial_params: Optional[np.ndarray] = None,
+        initial_params: np.ndarray,
         keep_history: bool = False,
     ) -> OptimizeResult:
-        if initial_params is not None:
-            assert self.positions.shape == initial_params.shape
+        dimensions = initial_params.shape[-1]
+        if initial_params.ndim == 2:
+            assert initial_params.shape[0] == self.swarm_size, (
+                "If you provide an (N, D) array as initial parameters for the swarm, "
+                "N must equal the size of the swarm."
+            )
             self.positions = initial_params
+        else:
+            self.positions = self.get_initial_params(dimensions)
+            # Set first particle in the swarm to the initial parameters:
+            self.positions[0, :] = initial_params
+        self.best_positions = self.positions.copy()
+        self.topology = self.topology_constructor(dimensions)
+        self.velocities = self.get_initial_velocities(dimensions)
+
         n_iterations_since_last_improvement = 0
         best_swarm_value_checkpoint = np.infty
         iterations = 0
@@ -156,6 +286,10 @@ class PSOOptimizer(Optimizer):
                     self.best_positions[particle_index] = self.positions[particle_index]
             self.topology.update_best(
                 self.best_positions, self.function_at_best_positions
+            )
+            # Update the positions:
+            self.update_positions(
+                self.positions, self.velocities, self.best_positions, self.topology
             )
             iterations += 1
             if self.patience is not None:
