@@ -149,7 +149,7 @@ class PSOOptimizer(Optimizer):
             _get_bounds_like_array(velocity_bounds) if velocity_bounds else None
         )
 
-    def get_initial_velocities(self, dimensions: int) -> np.ndarray:
+    def _get_initial_velocities(self, dimensions: int) -> np.ndarray:
         """
         Initialises velocities for the particles in the swarm for a given number of
         dimensions.
@@ -171,7 +171,7 @@ class PSOOptimizer(Optimizer):
             velocities = scale * velocities + shift
         return velocities
 
-    def get_initial_params(self, dimensions: int) -> np.ndarray:
+    def _get_initial_params(self, dimensions: int) -> np.ndarray:
         """
         Uniformly samples the parameter space to initialise the particles in the swarm.
 
@@ -189,7 +189,7 @@ class PSOOptimizer(Optimizer):
             + self.shift
         )
 
-    def update_positions(
+    def _update_positions(
         self,
         positions: np.ndarray,
         velocities: np.ndarray,
@@ -256,12 +256,12 @@ class PSOOptimizer(Optimizer):
             )
             self.positions = initial_params
         else:
-            self.positions = self.get_initial_params(dimensions)
+            self.positions = self._get_initial_params(dimensions)
             # Set first particle in the swarm to the initial parameters:
             self.positions[0, :] = initial_params
         self.best_positions = self.positions.copy()
         self.topology = self.topology_constructor(dimensions)
-        self.velocities = self.get_initial_velocities(dimensions)
+        self.velocities = self._get_initial_velocities(dimensions)
 
         n_iterations_since_last_improvement = 0
         best_swarm_value_checkpoint = np.infty
@@ -279,7 +279,7 @@ class PSOOptimizer(Optimizer):
                 self.best_positions, self.function_at_best_positions
             )
             # Update the positions:
-            self.update_positions(
+            self._update_positions(
                 self.positions, self.velocities, self.best_positions, self.topology
             )
             iterations += 1
