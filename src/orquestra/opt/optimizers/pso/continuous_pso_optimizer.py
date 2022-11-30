@@ -264,7 +264,7 @@ class PSOOptimizer(Optimizer):
         self.velocities = self._get_initial_velocities(dimensions)
 
         n_iterations_since_last_improvement = 0
-        best_swarm_value_checkpoint = np.infty
+        best_swarm_value_checkpoint = np.inf
         iterations = 0
         fevals = 0
         while True:
