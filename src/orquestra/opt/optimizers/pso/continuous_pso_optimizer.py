@@ -149,7 +149,7 @@ class PSOOptimizer(Optimizer):
         self.bounds = _get_bounds_like_array(bounds)
         self.scale = self.bounds[1] - self.bounds[0]
         self.shift = self.bounds[0]
-        self.function_at_best_positions = np.ones(swarm_size, dtype=float) * np.infty
+        self.function_at_best_positions = np.ones(swarm_size, dtype=float) * np.inf
         self.inertia = inertia
         self.topology_constructor = topology_constructor
         self.affinity_towards_best_particle_position = (
