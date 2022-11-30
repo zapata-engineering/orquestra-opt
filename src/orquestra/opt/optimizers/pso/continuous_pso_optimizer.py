@@ -164,7 +164,6 @@ class PSOOptimizer(Optimizer):
             0, 1, (self.swarm_size, dimensions)
         )
         if self.velocity_bounds is None:
-            self.velocity_bounds = None
             velocities = 0.5 * (self.scale * velocities - self.shift)
         else:
             scale = self.velocity_bounds[1] - self.velocity_bounds[0]
