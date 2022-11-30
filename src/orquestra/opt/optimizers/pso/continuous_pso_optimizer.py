@@ -1,8 +1,7 @@
 from typing import Callable, Optional, Sequence, Tuple, Union
 
 import numpy as np
-import scipy
-from scipy.optimize import OptimizeResult
+from scipy.optimize import OptimizeResult, Bounds as ScipyBounds
 
 from orquestra.opt.api import (
     CostFunction,
@@ -13,14 +12,12 @@ from orquestra.opt.api import (
 from orquestra.opt.history.recorder import RecorderFactory, recorder as _recorder
 from orquestra.opt.optimizers.pso.topologies import StarTopology, SwarmTopology
 
-Bounds = Union[
-    scipy.optimize.Bounds, Sequence[Tuple[float, float]], Tuple[float, float]
-]
+Bounds = Union[ScipyBounds, Sequence[Tuple[float, float]], Tuple[float, float]]
 
 
 def _get_bounds_like_array(
     bounds: Bounds,
-) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[float, float]]:
     """
     Casts a Bounds object to an object with two entries: the first being the lower
     bounds and the second being the upper bounds.
@@ -28,19 +25,20 @@ def _get_bounds_like_array(
     Parameters
     ----------
     bounds : Bounds
-        A Bounds object, which can be a scipy.optimize.Bounds object, a sequence of
+        A Bounds object, which can be a ScipyBounds object, a sequence of
         tuples, one tuple being the bonds per parameter, or a tuple of two floats,
         which are the lower and upper bounds for all parameters.
 
     Returns
     -------
-    Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]
+    Tuple[np.ndarray, np.ndarray]
         Lower and upper bounds.
     """
-    if isinstance(bounds, scipy.optimize.Bounds):
+    if isinstance(bounds, ScipyBounds):
         return bounds.lb, bounds.ub
     else:
-        return np.array(bounds).T
+        _bounds = np.array(bounds).T
+        return _bounds[0], _bounds[1]
 
 
 class PSOOptimizer(Optimizer):
@@ -159,7 +157,9 @@ class PSOOptimizer(Optimizer):
         )
         self.affinity_towards_best_swarm_position = affinity_towards_best_swarm_position
         self.learning_rate = learning_rate
-        self.velocity_bounds = velocity_bounds
+        self.velocity_bounds = (
+            _get_bounds_like_array(velocity_bounds) if velocity_bounds else None
+        )
 
     def get_initial_velocities(self, dimensions: int) -> np.ndarray:
         """
@@ -183,7 +183,6 @@ class PSOOptimizer(Optimizer):
             self.velocity_bounds = None
             velocities = 0.5 * (self.scale * velocities - self.shift)
         else:
-            self.velocity_bounds = _get_bounds_like_array(self.velocity_bounds)
             scale = self.velocity_bounds[1] - self.velocity_bounds[0]
             shift = self.velocity_bounds[0]
             velocities = scale * velocities + shift
