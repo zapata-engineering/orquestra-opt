@@ -22,17 +22,14 @@ def _get_bounds_like_array(
     Casts a Bounds object to an object with two entries: the first being the lower
     bounds and the second being the upper bounds.
 
-    Parameters
-    ----------
-    bounds : Bounds
-        A Bounds object, which can be a ScipyBounds object, a sequence of
-        tuples, one tuple being the bonds per parameter, or a tuple of two floats,
-        which are the lower and upper bounds for all parameters.
+    Args:
+        bounds: A Bounds object, which can be a ScipyBounds object, a sequence of
+            tuples, one tuple being the bonds per parameter, or a tuple of two
+            floats, which are the lower and upper bounds for all parameters.
 
-    Returns
-    -------
-    Tuple[np.ndarray, np.ndarray]
-        Lower and upper bounds.
+    Returns:
+        Union[Tuple[np.ndarray, np.ndarray], Tuple[float, float]]: Lower and
+            upper bounds.
     """
     if isinstance(bounds, ScipyBounds):
         return bounds.lb, bounds.ub
@@ -65,60 +62,51 @@ class PSOOptimizer(Optimizer):
         set using the method `get_initial_params`, which by default samples
         uniformly from the parameter space.
 
-        Parameters
-        ----------
-        swarm_size : int
-            Number of particles in the swarm.
-        bounds : Bounds
-            A Bounds object, which can be a scipy.optimize.Bounds object, a
-            sequence of tuples, one tuple being the bonds per parameter, or a
-            tuple of two floats, which are the lower and upper bounds for all
-            parameters.
-        inertia : float
-            Velocities of the particles keep a fraction of their previous value,
-            which is the inertia.
-        affinity_towards_best_particle_position : float
-            Dictates the scale of the affinity of a particle towards the best
-            position it has experienced in the past. The larger this is, the
-            more the particle will be drawn towards the best position it has seen.
-        affinity_towards_best_swarm_position : float
-            Dictates the scale of the affinity of a particle towards the best
-            position the swarm has experienced in the past. The larger this is,
-            the more the particle will be drawn towards the best position the
-            swarm has seen.
-        patience : Optional[int], optional
-            Number of iterations that the optimizer will wait before stopping,
-            if an improvement of `delta` has not been made in the previous
-            `patience` iterations, by default None. If `None`, either
-            `max_iterations` or `max_fevals` must be set.
-        delta : float, optional
-            Minimum improvement that the optimizer must experience in `patience`
-            steps for it not to stop. Valid only if `patience` is not None, by
-            default 1e-10
-        max_iterations : Optional[int], optional
-            Maximum number of updates of the whole swarm. If None, either
-            `max_fevals` or `patience` must be set for the optimizer to stop,
-            by default None
-        max_fevals : Optional[int], optional
-            Maximum number of function evaluations. If None, either
-            `max_iterations` or `patience` must be set for the optimizer to stop,
-            by default None
-        learning_rate : float, optional
-            Velocities will be updated proportionally to the learning rate.
-            Modifying this parameter is equivalent to multiplying `inertia`,
-            `affinity_towards_best_particle_position` and
-            `affinity_towards_best_swarm_position` altogether, by default 1.0
-        velocity_bounds : Optional[Bounds], optional
-            Velocity bounds which can avoid the velocity to explode. If None, no
-            bounds are imposed, by default None
-        topology_constructor : Callable[[int], SwarmTopology], optional
-            Class that receives the number of dimensions in the initialiser and
-            creates a SwarmTopology, by default StarTopology
-        seed : Optional[int], optional
-            Random seed for the numpy random number generator, by default None
-        recorder : RecorderFactory, optional
-            Recorder factory for keeping history of calls to the objective
-            function, by default _recorder
+        Args:
+            swarm_size: Number of particles in the swarm.
+            bounds: A Bounds object, which can be a
+                scipy.optimize.Bounds object, a sequence of tuples, one tuple
+                being the bonds per parameter, or a tuple of two floats, which
+                are the lower and upper bounds for all parameters.
+            inertia: Velocities of the particles keep a fraction of
+                their previous value, which is the inertia.
+            affinity_towards_best_particle_position: Dictates the scale of the
+                affinity of a particle towards the best position it has
+                experienced in the past. The larger this is, the more the
+                particle will be drawn towards the best position it has seen.
+            affinity_towards_best_swarm_position: Dictates the scale
+                of the affinity of a particle towards the best position the
+                swarm has experienced in the past. The larger this is, the
+                more the particle will be drawn towards the best position the
+                swarm has seen.
+            patience: Number of iterations that the optimizer will wait before
+                stopping, if an improvement of `delta` has not been made in
+                the previous `patience` iterations, by default None. If `None`,
+                either `max_iterations` or `max_fevals` must be set.
+            delta: Minimum improvement that the optimizer must experience in
+                `patience` steps for it not to stop. Valid only if `patience`
+                is not None. Defaults to 1e-10.
+            max_iterations: Maximum number of updates of the whole swarm. If
+                None, either `max_fevals` or `patience` must be set for the
+                optimizer to stop. Defaults to None.
+            max_fevals: Maximum number of function evaluations. If None,
+                either `max_iterations` or `patience` must be set for the
+                optimizer to stop. Defaults to None.
+            learning_rate: Velocities will be updated proportionally to the
+            learning rate. Modifying this parameter is equivalent to
+                multiplying `inertia`,
+                `affinity_towards_best_particle_position` and
+                `affinity_towards_best_swarm_position` altogether. Defaults
+                to 1.0.
+            velocity_bounds: Velocity bounds which can avoid the velocity to
+                explode. If None, no bounds are imposed. Defaults to None.
+            topology_constructor: Class that receives the number of dimensions
+                in the initialiser and creates a SwarmTopology. Defaults to
+                StarTopology.
+            seed: Random seed for the numpy random number generator. Defaults
+                to None.
+            recorder: Recorder factory for keeping history of calls to the
+                objective function. Defaults to _recorder.
         """
         assert 0 < learning_rate <= 1.0, "Learning rate must be in (0, 1]."
         assert 0 < inertia <= 1, "Inertia must be in (0, 1]"
@@ -166,15 +154,11 @@ class PSOOptimizer(Optimizer):
         Initialises velocities for the particles in the swarm for a given number of
         dimensions.
 
-        Parameters
-        ----------
-        dimensions : int
-            Number of dimensions of the problem.
+        Args:
+            dimensions: Number of dimensions of the problem.
 
-        Returns
-        -------
-        np.ndarray
-            (N, dimensions) array, where N is the swarm size.
+        Returns:
+            np.ndarray: (N, dimensions) array, where N is the swarm size.
         """
         velocities = self.random_number_generator.uniform(
             0, 1, (self.swarm_size, dimensions)
@@ -192,15 +176,12 @@ class PSOOptimizer(Optimizer):
         """
         Uniformly samples the parameter space to initialise the particles in the swarm.
 
-        Parameters
-        ----------
-        dimensions : int
-            Number of dimensions of the problem.
 
-        Returns
-        -------
-        np.ndarray
-            (N, dimensions) array, where N is the swarm size.
+        Args:
+            dimensions: Number of dimensions of the problem.
+
+        Returns:
+            np.ndarray: (N, dimensions) array, where N is the swarm size.
         """
         return (
             self.random_number_generator.uniform(
@@ -220,17 +201,14 @@ class PSOOptimizer(Optimizer):
         In-place modification of the positions and velocities of the
         particles in the swarm.
 
-        Parameters
-        ----------
-        positions : np.ndarray
-            (N, D) array of the current positions of the particles in the swarm.
-        velocities : np.ndarray
-            (N, D) array of the current velocities of the particles in the swarm.
-        best_positions : np.ndarray
-            (N, D) array of the best positions the particles in the swarm that
-            have been seen.
-        topology : SwarmTopology
-            Topology object that dictates the best swarm position.
+        Args:
+            positions: (N, D) array of the current positions of the particles in the
+                swarm.
+            velocities: (N, D) array of the current velocities of the particles in
+                the swarm.
+            best_positions: (N, D) array of the best positions the particles in the
+                swarm that have been seen.
+            topology: Topology object that dictates the best swarm position.
         """
         dimensions = positions.shape[-1]
         inertia_term = self.inertia * velocities
