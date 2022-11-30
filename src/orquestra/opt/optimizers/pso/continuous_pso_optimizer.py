@@ -171,7 +171,7 @@ class PSOOptimizer(Optimizer):
             velocities = scale * velocities + shift
         return velocities
 
-    def _get_initial_params(self, dimensions: int) -> np.ndarray:
+    def get_initial_params(self, dimensions: int) -> np.ndarray:
         """
         Uniformly samples the parameter space to initialise the particles in the swarm.
 
@@ -256,7 +256,7 @@ class PSOOptimizer(Optimizer):
             )
             self.positions = initial_params
         else:
-            self.positions = self._get_initial_params(dimensions)
+            self.positions = self.get_initial_params(dimensions)
             # Set first particle in the swarm to the initial parameters:
             self.positions[0, :] = initial_params
         self.best_positions = self.positions.copy()
