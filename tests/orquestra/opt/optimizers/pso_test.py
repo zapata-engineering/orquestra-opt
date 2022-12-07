@@ -9,11 +9,12 @@ from orquestra.opt.optimizers.pso import PSOOptimizer
         {
             "swarm_size": 10,
             "bounds": (-2.0, 2.0),
-            "inertia": 1.0,
-            "affinity_towards_best_particle_position": 1.0,
-            "affinity_towards_best_swarm_position": 1.0,
-            "max_iterations": 100,
+            "inertia": 0.9,
+            "affinity_towards_best_particle_position": 0.5,
+            "affinity_towards_best_swarm_position": 0.5,
+            "max_iterations": 1000,
             "learning_rate": 1.0,
+            "seed": 68521,
         }
     ]
 )
