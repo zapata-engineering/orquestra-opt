@@ -4,7 +4,7 @@ import numpy as np
 from scipy.optimize import OptimizeResult, Bounds as ScipyBounds
 
 from orquestra.opt.api import (
-    CostFunction,
+    CallableWithGradient,
     Optimizer,
     construct_history_info,
     optimization_result,
@@ -244,7 +244,7 @@ class PSOOptimizer(Optimizer):
 
     def _minimize(
         self,
-        cost_function: CostFunction,
+        cost_function: Union[CallableWithGradient, Callable],
         initial_params: np.ndarray,
         keep_history: bool = False,
     ) -> OptimizeResult:
