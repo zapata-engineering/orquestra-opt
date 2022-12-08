@@ -1,7 +1,8 @@
 from typing import Callable, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from scipy.optimize import OptimizeResult, Bounds as ScipyBounds
+from scipy.optimize import Bounds as ScipyBounds
+from scipy.optimize import OptimizeResult
 
 from orquestra.opt.api import (
     CallableWithGradient,
@@ -9,7 +10,8 @@ from orquestra.opt.api import (
     construct_history_info,
     optimization_result,
 )
-from orquestra.opt.history.recorder import RecorderFactory, recorder as _recorder
+from orquestra.opt.history.recorder import RecorderFactory
+from orquestra.opt.history.recorder import recorder as _recorder
 from orquestra.opt.optimizers.pso.topologies import StarTopology, SwarmTopology
 
 Bounds = Union[ScipyBounds, Sequence[Tuple[float, float]], Tuple[float, float]]
