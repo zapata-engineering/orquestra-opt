@@ -87,28 +87,25 @@ class PSOOptimizer(Optimizer):
                 either `max_iterations` or `max_fevals` must be set.
             delta: Minimum improvement that the optimizer must experience in
                 `patience` steps for it not to stop. Valid only if `patience`
-                is not None. Defaults to 1e-10.
+                is not None.
             max_iterations: Maximum number of updates of the whole swarm. If
                 None, either `max_fevals` or `patience` must be set for the
-                optimizer to stop. Defaults to None.
+                optimizer to stop.
             max_fevals: Maximum number of function evaluations. If None,
                 either `max_iterations` or `patience` must be set for the
-                optimizer to stop. Defaults to None.
+                optimizer to stop.
             learning_rate: Velocities will be updated proportionally to the
             learning rate. Modifying this parameter is equivalent to
                 multiplying `inertia`,
                 `affinity_towards_best_particle_position` and
-                `affinity_towards_best_swarm_position` altogether. Defaults
-                to 1.0.
+                `affinity_towards_best_swarm_position` altogether.
             velocity_bounds: Velocity bounds which can avoid the velocity to
-                explode. If None, no bounds are imposed. Defaults to None.
+                explode. If None, no bounds are imposed.
             topology_constructor: Class that receives the number of dimensions
-                in the initialiser and creates a SwarmTopology. Defaults to
-                StarTopology.
-            seed: Random seed for the numpy random number generator. Defaults
-                to None.
+                in the initialiser and creates a SwarmTopology.
+            seed: Random seed for the numpy random number generator.
             recorder: Recorder factory for keeping history of calls to the
-                objective function. Defaults to _recorder.
+                objective function.
         """
         assert 0 < learning_rate <= 1.0, "Learning rate must be in (0, 1]."
         assert 0 < inertia <= 1, "Inertia must be in (0, 1]"
