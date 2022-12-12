@@ -60,7 +60,7 @@ class BasinHoppingOptimizer(Optimizer):
     def _minimize(
         self,
         cost_function: Union[CallableWithGradient, Callable],
-        initial_params: Optional[np.ndarray] = None,
+        initial_params: np.ndarray,
         keep_history: bool = False,
     ):
         """

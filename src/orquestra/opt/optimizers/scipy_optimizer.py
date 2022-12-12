@@ -27,7 +27,7 @@ class ScipyOptimizer(Optimizer):
             None,
         ] = None,
         options: Optional[Dict] = None,
-        recorder: RecorderFactory = _recorder,
+        recorder: RecorderFactory = _recorder,ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
     ):
         """
         Integration with scipy optimizers. Documentation for this module is minimal,
@@ -53,7 +53,7 @@ class ScipyOptimizer(Optimizer):
     def _minimize(
         self,
         cost_function: Union[CallableWithGradient, Callable],
-        initial_params: Optional[np.ndarray] = None,
+        initial_params: np.ndarray,
         keep_history: bool = False,
     ):
         """
