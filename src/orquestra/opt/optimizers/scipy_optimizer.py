@@ -27,7 +27,7 @@ class ScipyOptimizer(Optimizer):
             None,
         ] = None,
         options: Optional[Dict] = None,
-        recorder: RecorderFactory = _recorder,ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+        recorder: RecorderFactory = _recorder,
     ):
         """
         Integration with scipy optimizers. Documentation for this module is minimal,
