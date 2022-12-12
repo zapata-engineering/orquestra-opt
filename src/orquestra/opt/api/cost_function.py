@@ -5,7 +5,6 @@
 from typing import Protocol, Union
 
 import numpy as np
-from orquestra.quantum.utils import ValueEstimate
 
 from .functions import (
     CallableStoringArtifacts,

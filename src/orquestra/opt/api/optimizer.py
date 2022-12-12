@@ -11,8 +11,6 @@ from scipy.optimize import OptimizeResult
 from ..history.recorder import (
     AnyHistory,
     AnyRecorder,
-    ArtifactRecorder,
-    ArtifactRecorderWithGradient,
     RecorderFactory,
     SimpleRecorder,
     SimpleRecorderWithGradient,

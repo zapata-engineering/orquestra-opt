@@ -10,7 +10,6 @@ from typing import (
     Dict,
     Generic,
     List,
-    NamedTuple,
     Protocol,
     Sequence,
     TypeVar,
