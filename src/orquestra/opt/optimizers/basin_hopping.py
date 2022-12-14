@@ -1,7 +1,7 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 
 import numpy as np
 import scipy.optimize

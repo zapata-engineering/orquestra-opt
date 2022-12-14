@@ -3,17 +3,22 @@
 ################################################################################
 """Main implementation of the recorder."""
 import copy
+from dataclasses import dataclass
 from typing import (
     Any,
     Callable,
     Dict,
     Generic,
     List,
-    NamedTuple,
+    Protocol,
+    Sequence,
     TypeVar,
     Union,
     overload,
+    runtime_checkable,
 )
+
+import numpy as np
 
 from ..api.functions import (
     CallableStoringArtifacts,
@@ -24,8 +29,8 @@ from ..api.functions import (
 )
 from ..api.save_conditions import SaveCondition, always
 
-T = TypeVar("T")
-S = TypeVar("S")
+T = TypeVar("T", covariant=True)
+S = TypeVar("S", contravariant=True)
 
 NATIVE_RECORDER_ATTRIBUTES = (
     "predicate",
@@ -46,21 +51,20 @@ class ArtifactCollection(dict):
     forced: bool = False
 
 
-class HistoryEntryWithArtifacts(NamedTuple):
-    """A history entry enhanced with artifacts."""
-
-    call_number: int
-    params: Any
-    value: Any
-    artifacts: Dict[str, Any]
-
-
-class HistoryEntry(NamedTuple):
+@dataclass
+class HistoryEntry:
     """A history entry storing call number, parameters and target function value."""
 
     call_number: int
     params: Any
     value: Any
+
+
+@dataclass
+class HistoryEntryWithArtifacts(HistoryEntry):
+    """A history entry enhanced with artifacts."""
+
+    artifacts: Dict[str, Any]
 
 
 def copy_recorder(recorder_to_copy):
@@ -87,7 +91,105 @@ def deepcopy_recorder(recorder_to_copy, memo):
     return recorder_copy
 
 
-class SimpleRecorder(Generic[S, T]):
+@runtime_checkable
+class SimpleRecorder(Protocol[S, T]):
+    """Protocol representing recorder with basic functionalities.
+
+    Simple recorders have target and history attributes. They forward calls made
+    to them to the target.
+
+    The target property is exposed so that clients have access to an unwrapped
+    callable in case they need to make a call that is not recorder.
+
+    Note that this recorder is structurally a base protocol for any other
+    types of recorders. In other words  every recorder is at least a SimpleRecorder.
+    """
+
+    @property
+    def target(self) -> Callable[[S], T]:
+        pass
+
+    def __call__(self, parameters: S) -> T:
+        pass
+
+    @property
+    def history(self) -> Sequence[HistoryEntry]:
+        pass
+
+
+@runtime_checkable
+class SimpleRecorderWithGradient(Protocol):
+    """A protocol representing recorders wrapping functions with gradients.
+
+    Aside the attributes of SimpleRecorder, this recorder also has a gradient
+    attribute which itself is a recorder (and hence, has its own `history`
+    attribute.
+
+    Note that this protocol is not generic, because we only define gradients
+    for functions from R^N to R (which translates to Callable[[ndarray], float]).
+    """
+
+    @property
+    def target(self) -> Callable[[np.ndarray], float]:
+        pass
+
+    def __call__(self, parameters: np.ndarray) -> float:
+        pass
+
+    @property
+    def gradient(self) -> SimpleRecorder[np.ndarray, np.ndarray]:
+        pass
+
+    @property
+    def history(self) -> Sequence[HistoryEntry]:
+        pass
+
+
+class ArtifactRecorder(Protocol[S, T]):
+    """A protocol representing recorders that can store artifacts.
+
+    It is like simple recorder, but its target has to be a CallableStoringArtifacts.
+    It also stores a list of HistoryEntryWithArtifact objects instead of usual
+    HistoryEntry ones.
+    """
+
+    @property
+    def target(self) -> CallableStoringArtifacts[S, T]:
+        pass
+
+    def __call__(self, parameters: S) -> T:
+        pass
+
+    @property
+    def history(self) -> Sequence[HistoryEntryWithArtifacts]:
+        pass
+
+
+class ArtifactRecorderWithGradient(Protocol):
+    """Protocol for recorders wrapping functions having gradient and storing artifacts.
+
+    It is the most narrow type of recorder, combining both the
+    SimpleReorderWithGradient and Artifact recorder. Hence, this recorder is
+    non-generic and stores history entries with artifacts.
+    """
+
+    @property
+    def target(self) -> CallableWithGradientStoringArtifacts:
+        pass
+
+    def __call__(self, parameters: np.ndarray) -> float:
+        pass
+
+    @property
+    def gradient(self) -> SimpleRecorder[np.ndarray, np.ndarray]:
+        pass
+
+    @property
+    def history(self) -> Sequence[HistoryEntryWithArtifacts]:
+        pass
+
+
+class SimpleRecorderImpl(Generic[S, T]):
     """A basic recorder that stores history entries.
 
     Args:
@@ -133,7 +235,7 @@ class SimpleRecorder(Generic[S, T]):
     __deepcopy__ = deepcopy_recorder
 
 
-class SimpleRecorderWithGradient(SimpleRecorder):
+class SimpleRecorderWithGradientImpl(SimpleRecorderImpl):
     """A recorder saving history entries that works with callables with gradient.
 
     Except having `gradient` attribute, this recorder is the same as `SimpleRecorder`.
@@ -144,7 +246,7 @@ class SimpleRecorderWithGradient(SimpleRecorder):
         self.gradient = recorder(target.gradient, save_condition)
 
 
-class ArtifactRecorder(Generic[S, T]):
+class ArtifactRecorderImpl(Generic[S, T]):
     """A recorder saving history entries with artifacts.
 
     Parameters to initializer are the same as for `SimpleRecorder`,
@@ -185,7 +287,7 @@ class ArtifactRecorder(Generic[S, T]):
     __deepcopy__ = deepcopy_recorder
 
 
-class ArtifactRecorderWithGradient(ArtifactRecorder):
+class ArtifactRecorderWithGradientImpl(ArtifactRecorderImpl):
     """A recorder storing history entries with artifacts supporting callables with
     gradient.
     """
@@ -222,7 +324,7 @@ def store_artifact(artifacts) -> StoreArtifact:
 
 AnyRecorder = Union[SimpleRecorder, ArtifactRecorder]
 RecorderFactory = Callable[[Callable], AnyRecorder]
-AnyHistory = Union[List[HistoryEntry], List[HistoryEntryWithArtifacts]]
+AnyHistory = Union[Sequence[HistoryEntry], Sequence[HistoryEntryWithArtifacts]]
 
 
 @overload
@@ -280,10 +382,10 @@ def recorder(function, save_condition: SaveCondition = always):
     with_gradient = isinstance(function, CallableWithGradient)
 
     if with_artifacts and with_gradient:
-        return ArtifactRecorderWithGradient(function, save_condition)
+        return ArtifactRecorderWithGradientImpl(function, save_condition)
     elif with_artifacts:
-        return ArtifactRecorder(function, save_condition)
+        return ArtifactRecorderImpl(function, save_condition)
     elif with_gradient:
-        return SimpleRecorderWithGradient(function, save_condition)
+        return SimpleRecorderWithGradientImpl(function, save_condition)
     else:
-        return SimpleRecorder(function, save_condition)
+        return SimpleRecorderImpl(function, save_condition)

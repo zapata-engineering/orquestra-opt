@@ -11,14 +11,13 @@ from scipy.optimize import OptimizeResult
 from ..history.recorder import (
     AnyHistory,
     AnyRecorder,
-    ArtifactRecorder,
-    ArtifactRecorderWithGradient,
     RecorderFactory,
     SimpleRecorder,
     SimpleRecorderWithGradient,
 )
 from ..history.recorder import recorder as _recorder
 from . import CallableWithGradient, CostFunction
+from .cost_function import _CostFunction
 
 
 class Optimizer(ABC):
@@ -48,6 +47,8 @@ class Optimizer(ABC):
                 evaluations should be recorded.
         """
         cost_function = self._preprocess_cost_function(cost_function)
+        x: _CostFunction = self.recorder(cost_function)
+        print(x)
         if keep_history:
             cost_function = self.recorder(cost_function)
         return self._minimize(cost_function, initial_params, keep_history)
@@ -112,15 +113,11 @@ def construct_history_info(
 ) -> Dict[str, AnyHistory]:
     histories: Dict[str, AnyHistory] = {}
     if keep_history:
-        # TODO: When we upgraded to 3.8 use get_args on AnyRecorder instead
-        if isinstance(cost_function, ArtifactRecorder):
-            histories["history"] = cost_function.history
         if isinstance(cost_function, SimpleRecorder):
             histories["history"] = cost_function.history
-        if isinstance(cost_function, ArtifactRecorderWithGradient):
-            histories["gradient_history"] = cost_function.gradient.history
         if isinstance(cost_function, SimpleRecorderWithGradient):
             histories["gradient_history"] = cost_function.gradient.history
+
     else:
         histories["history"] = cast(AnyHistory, [])
     return histories
@@ -130,11 +127,12 @@ def extend_histories(
     cost_function: AnyRecorder, histories: Dict[str, List]
 ) -> Dict[str, List]:
     new_histories = construct_history_info(cost_function, True)
-    updated_histories = {"history": histories["history"] + new_histories["history"]}
+    updated_histories = {"history": [*histories["history"], *new_histories["history"]]}
     if hasattr(cost_function, "gradient"):
-        updated_histories["gradient_history"] = (
-            histories["gradient_history"] + new_histories["gradient_history"]
-        )
+        updated_histories["gradient_history"] = [
+            *histories["gradient_history"],
+            *new_histories["gradient_history"],
+        ]
     return updated_histories
 
 

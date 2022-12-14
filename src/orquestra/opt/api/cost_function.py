@@ -5,7 +5,6 @@
 from typing import Protocol, Union
 
 import numpy as np
-from orquestra.quantum.utils import ValueEstimate
 
 from .functions import (
     CallableStoringArtifacts,
@@ -17,7 +16,7 @@ from .functions import (
 class _CostFunction(Protocol):
     """Cost function transforming vectors from R^n to numbers or their estimates."""
 
-    def __call__(self, parameters: np.ndarray) -> Union[float, ValueEstimate]:
+    def __call__(self, parameters: np.ndarray) -> float:
         """Compute  value of the cost function for given parameters."""
         ...
 
