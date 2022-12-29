@@ -15,6 +15,7 @@ from ..api import (
 )
 from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
+from ..gradients import finite_differences_gradient
 
 
 class SimpleGradientDescent(Optimizer):
@@ -22,11 +23,14 @@ class SimpleGradientDescent(Optimizer):
         self,
         learning_rate: float,
         number_of_iterations: int,
+        patience: Optional[int] = None,
         recorder: RecorderFactory = _recorder,
     ):
         """
         Args:
-            parameter_values_list: list of parameter values to evaluate
+            learning_rate: learning rate.
+            number_of_iterations: number of gradient descent iterations.
+            patience: number of iterations to wait before early stopping.
             recorder: recorder object which defines how to store
                 the optimization history.
         """
@@ -35,6 +39,7 @@ class SimpleGradientDescent(Optimizer):
 
         assert number_of_iterations > 0
         self.number_of_iterations = number_of_iterations
+        self.patience = patience
 
     def _minimize(
         self,
@@ -62,14 +67,27 @@ class SimpleGradientDescent(Optimizer):
                 see note.
 
         """
-        assert isinstance(cost_function, CallableWithGradient)
 
         current_parameters = copy.deepcopy(initial_params)
-        for _ in range(self.number_of_iterations):
+        if self.patience is not None:
+            best_value = np.inf
+            best_iteration = 0
+        for iteration in range(self.number_of_iterations):
             gradients = cost_function.gradient(current_parameters)
             current_parameters = current_parameters - (self.learning_rate * gradients)
             if keep_history:
                 final_value = cost_function(current_parameters)
+            if self.patience is not None:
+                if keep_history:
+                    current_value = final_value
+                else:
+                    current_value = cost_function(current_parameters)
+                improvement = best_value - current_value
+                if improvement > 1e-8:
+                    best_value = current_value
+                    best_iteration = iteration
+                elif iteration - best_iteration >= self.patience:
+                    break
 
         if not keep_history:
             final_value = cost_function(current_parameters)
@@ -77,7 +95,26 @@ class SimpleGradientDescent(Optimizer):
         return optimization_result(
             opt_value=final_value,
             opt_params=current_parameters,
-            nit=self.number_of_iterations,
+            nit=iteration + 1,
             nfev=None,
             **construct_history_info(cost_function, keep_history),  # type: ignore
         )
+
+    def _preprocess_cost_function(
+        self, cost_function: Union[CallableWithGradient, Callable]
+    ) -> CallableWithGradient:
+        if not isinstance(cost_function, CallableWithGradient):
+            gradient_fn = finite_differences_gradient(cost_function)
+
+            class WrappedCostFunction:
+                def __init__(self, cost_function):
+                    self.cost_function = cost_function
+
+                def __call__(self, params: np.ndarray) -> float:
+                    return self.cost_function(params)
+
+                def gradient(self, params: np.ndarray) -> np.ndarray:
+                    return gradient_fn(params)
+
+            cost_function = WrappedCostFunction(cost_function=cost_function)
+        return cost_function
