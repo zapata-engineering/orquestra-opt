@@ -36,7 +36,7 @@ def _get_bounds_like_array(
     if isinstance(bounds, ScipyBounds):
         return bounds.lb, bounds.ub
     else:
-        _bounds = np.array(bounds).T
+        _bounds = np.array(bounds, dtype=float).T
         return _bounds[0], _bounds[1]
 
 

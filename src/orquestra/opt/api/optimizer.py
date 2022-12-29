@@ -47,8 +47,6 @@ class Optimizer(ABC):
                 evaluations should be recorded.
         """
         cost_function = self._preprocess_cost_function(cost_function)
-        x: _CostFunction = self.recorder(cost_function)
-        print(x)
         if keep_history:
             cost_function = self.recorder(cost_function)
         return self._minimize(cost_function, initial_params, keep_history)
