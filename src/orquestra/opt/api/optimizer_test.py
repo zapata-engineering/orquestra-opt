@@ -218,9 +218,9 @@ other projects.
 Usage:
 
     .. code:: python
-    
+
        from orquestra.opt.api.optimizer_test import NESTED_OPTIMIZER_CONTRACTS
-    
+
        @pytest.mark.parametrize("contract", NESTED_OPTIMIZER_CONTRACTS)
        def test_nestedoptimizer_contract(contract):
            optimizer = MockNestedOptimizer(inner_optimizer=MockOptimizer(), n_iters=5)
