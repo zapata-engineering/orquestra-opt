@@ -62,6 +62,14 @@ class TestSimpleGradientDescent:
         with pytest.raises(AssertionError):
             SimpleGradientDescent(0.1, -1)
 
+    def test_succeeds_to_minimize_when_cost_function_does_not_have_gradient_method(
+        self, optimizer
+    ):
+        def cost_function(x):
+            return sum(x)
+
+        optimizer.minimize(cost_function, np.array([0, 0]))
+
     def test_history_contains_function_evaluations(self, optimizer, sum_x_squared):
         results = optimizer.minimize(sum_x_squared, np.array([1, 0]), keep_history=True)
 
