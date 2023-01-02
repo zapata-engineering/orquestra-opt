@@ -4,10 +4,10 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 from ttopt import TTOpt
 
-from orquestra.opt.optimizers.pso.continuous_pso_optimizer import (  # TODO: where should these Bounds live?
-    Bounds,
-    _get_bounds_like_array,
+from orquestra.opt.optimizers.pso.continuous_pso_optimizer import (
+    Bounds,  # TODO: where should these Bounds live?
 )
+from orquestra.opt.optimizers.pso.continuous_pso_optimizer import _get_bounds_like_array
 
 from ..api import CostFunction, Optimizer, construct_history_info, optimization_result
 from ..history.recorder import RecorderFactory
