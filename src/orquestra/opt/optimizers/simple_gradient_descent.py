@@ -67,7 +67,8 @@ class SimpleGradientDescent(Optimizer):
                 see note.
 
         """
-
+        # So that mypy does not complain about missing attributes:
+        assert hasattr(cost_function, "gradient")
         current_parameters = copy.deepcopy(initial_params)
         if self.patience is not None:
             best_value = np.inf
