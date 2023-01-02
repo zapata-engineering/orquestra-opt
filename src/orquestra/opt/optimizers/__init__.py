@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     pass
 try:
     from .tensor_train_optimizer import TensorTrainOptimizer
-except:
+except ModuleNotFoundError:
     pass
 from .scipy_optimizer import ScipyOptimizer
 from .search_points_optimizer import SearchPointsOptimizer
