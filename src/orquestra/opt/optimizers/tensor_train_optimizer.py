@@ -1,4 +1,4 @@
-from typing import List, Sequence, Tuple, Union, Optional
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 from scipy.optimize import OptimizeResult
