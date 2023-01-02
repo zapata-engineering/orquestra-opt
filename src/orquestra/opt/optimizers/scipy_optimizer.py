@@ -16,6 +16,25 @@ from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
 
 
+class _CostFunctionWithBestValue:
+    def __init__(self, cost_function: Union[CallableWithGradient, Callable]) -> None:
+        self.cost_function = cost_function
+        # Inherit all attributes from the cost function
+        for attr in dir(cost_function):
+            if not attr.startswith("__"):
+                setattr(self, attr, getattr(cost_function, attr))
+        self.best_value = np.inf
+        self.best_params = np.empty(1)
+        self.best_params.fill(np.nan)
+
+    def __call__(self, params: np.ndarray) -> float:
+        value = self.cost_function(params)
+        if value < self.best_value:
+            self.best_value = value
+            self.best_params = params
+        return value
+
+
 class ScipyOptimizer(Optimizer):
     def __init__(
         self,
@@ -50,9 +69,14 @@ class ScipyOptimizer(Optimizer):
         self.constraints = [] if constraints is None else constraints
         self.bounds = bounds
 
+    def _preprocess_cost_function(
+        self, cost_function: Union[CallableWithGradient, Callable]
+    ) -> _CostFunctionWithBestValue:
+        return _CostFunctionWithBestValue(cost_function)
+
     def _minimize(
         self,
-        cost_function: Union[CallableWithGradient, Callable],
+        cost_function: _CostFunctionWithBestValue,
         initial_params: np.ndarray,
         keep_history: bool = False,
     ):
@@ -82,8 +106,8 @@ class ScipyOptimizer(Optimizer):
             bounds=self.bounds,
             jac=jacobian,
         )
-        opt_value = result.fun
-        opt_params = result.x
+        opt_value = cost_function.best_value
+        opt_params = cost_function.best_params
 
         nit = result.get("nit", None)
         nfev = result.get("nfev", None)
