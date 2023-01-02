@@ -16,8 +16,7 @@ from ..history.recorder import (
     SimpleRecorderWithGradient,
 )
 from ..history.recorder import recorder as _recorder
-from . import CallableWithGradient, CostFunction
-from .cost_function import _CostFunction
+from .cost_function import CallableWithGradient, CostFunction
 
 
 class Optimizer(ABC):

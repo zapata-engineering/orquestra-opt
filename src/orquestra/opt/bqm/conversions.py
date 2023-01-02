@@ -24,7 +24,7 @@ def convert_qubo_to_paulisum(qubo: BinaryQuadraticModel) -> PauliSum:
         qubo: Object we want to convert
 
     Returns:
-        PauliSum: PauliSum representation of the input qubo.
+        PauliSum representation of the input qubo.
 
     """
     linear_coeffs, quadratic_coeffs, offset = qubo.to_ising()
