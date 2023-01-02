@@ -13,9 +13,9 @@ from ..api import (
     construct_history_info,
     optimization_result,
 )
+from ..gradients import finite_differences_gradient
 from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
-from ..gradients import finite_differences_gradient
 
 
 class SimpleGradientDescent(Optimizer):
