@@ -101,6 +101,10 @@ class CostFunctionWithBestCandidates:
             arrays of the same shape.
         """
         self.cost_function = cost_function
+        # self should have access to cost_function attributes:
+        for attr in dir(cost_function):
+            if not attr.startswith("__"):
+                setattr(self, attr, getattr(cost_function, attr))
         self.candidates: List[dict] = [{}] * n_candidates
         self.candidates_hashes = [0] * n_candidates
         self.bounds = bounds
