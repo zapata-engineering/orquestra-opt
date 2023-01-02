@@ -1,9 +1,10 @@
-from typing import List, Sequence, Tuple, Union
+from typing import Callable, List, Sequence, Tuple, Union
 
 import numpy as np
 from scipy.optimize import OptimizeResult
 from ttopt import TTOpt
 
+from orquestra.opt.api.functions import CallableWithGradient
 from orquestra.opt.optimizers.pso.continuous_pso_optimizer import (
     Bounds,  # TODO: where should these Bounds live?
 )
@@ -82,7 +83,7 @@ def _get_tighter_bounds(
     return candidate - distances, candidate + distances
 
 
-class CostFunctionWithBestCandidates:
+class _CostFunctionWithBestCandidates:
     def __init__(
         self,
         cost_function: CostFunction,
@@ -206,20 +207,21 @@ class TensorTrainOptimizer(Optimizer):
 
     def _preprocess_cost_function(
         self, cost_function: CostFunction
-    ) -> CostFunctionWithBestCandidates:
+    ) -> _CostFunctionWithBestCandidates:
         """
         Wraps the cost function in a CostFunctionWithBestCandidates.
         """
-        return CostFunctionWithBestCandidates(
+        return _CostFunctionWithBestCandidates(
             cost_function, self.maximum_number_of_candidates, self.bounds
         )
 
     def _minimize(
         self,
-        cost_function: CostFunctionWithBestCandidates,
+        cost_function: Union[CallableWithGradient, Callable],
         initial_params: np.ndarray,
         keep_history: bool = False,
     ) -> OptimizeResult:
+        assert isinstance(cost_function, _CostFunctionWithBestCandidates)
         n_dim = initial_params.size
         evaluations_per_candidate_iterator = iter(self.evaluations_per_candidate)
         for i in range(self.n_rounds):
