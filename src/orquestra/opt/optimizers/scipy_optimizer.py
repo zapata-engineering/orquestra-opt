@@ -76,7 +76,7 @@ class ScipyOptimizer(Optimizer):
 
     def _minimize(
         self,
-        cost_function: _CostFunctionWithBestValue,
+        cost_function: Union[CallableWithGradient, Callable],
         initial_params: np.ndarray,
         keep_history: bool = False,
     ):
@@ -90,7 +90,7 @@ class ScipyOptimizer(Optimizer):
                 evaluations should be recorded.
 
         """
-
+        assert isinstance(cost_function, _CostFunctionWithBestValue)
         jacobian = None
         if isinstance(cost_function, CallableWithGradient) and callable(
             getattr(cost_function, "gradient")
