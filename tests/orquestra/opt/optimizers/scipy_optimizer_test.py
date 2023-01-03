@@ -20,6 +20,7 @@ from orquestra.opt.optimizers.scipy_optimizer import ScipyOptimizer
         {"method": "L-BFGS-B"},
         {"method": "Nelder-Mead"},
         {"method": "SLSQP"},
+        {"method": "Powell"},
         {"method": "COBYLA", "options": {"maxiter": 50000, "tol": 1e-7}},
     ]
 )
@@ -107,3 +108,30 @@ class TestScipyOptimizer:
             results_with_constraints.opt_value, abs=1e-1
         )
         assert results_with_constraints.opt_params.sum() >= 3
+
+    # https://github.com/scipy/scipy/issues/17673 reports a function and that is minimised
+    # with an initial point that has a given cost function value which is lower than the
+    # optimised value by the Powell optimizer. This test is to ensure that our solution
+    # over scipy is not affected by this issue.
+    @pytest.mark.parametrize("method", ["Powell", "L-BFGS-B", "Nelder-Mead", "SLSQP"])
+    def test_Langermann_function(self, method):
+        # Definition of the function
+        langer_c = np.array([6, 1, 4, 4, 8])
+        langer_A = np.array(
+            [[4, 6, 3, 5], [8, 7, 9, 9], [2, 7, 8, 8], [9, 2, 6, 9], [5, 4, 1, 4]]
+        )
+
+        def langermann(parameters: np.ndarray) -> float:
+            # This function is bounded in the [0, 10] box
+            sum_ = np.sum(np.subtract(langer_A, parameters) ** 2, axis=1)
+            vec = np.exp(-1 / np.pi * sum_) * np.cos(np.pi * sum_)
+            result = np.dot(langer_c, vec)
+            return result
+
+        # Initial point
+        x0 = np.array([4.65116802, 4.42985893, 1.74720157, 4.29727392])
+        y0 = langermann(x0)
+
+        optimiser = ScipyOptimizer(method=method, bounds=[(0, 10)] * 4)
+        result = optimiser.minimize(langermann, x0)
+        assert result.opt_value <= y0
