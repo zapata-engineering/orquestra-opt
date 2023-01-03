@@ -82,7 +82,7 @@ class _CostFunctionWithBestValue(metaclass=_CostFunctionWithBestValueType):
                     if not np.isclose(constraint["fun"](params, *constraint_args), 0):
                         return False
                 elif constraint["type"] == "ineq":
-                    if constraint["fun"](params, *constraint_args) <= 0:
+                    if constraint["fun"](params, *constraint_args) < 0:
                         return False
         return True
 
