@@ -90,7 +90,7 @@ class TestScipyOptimizer:
         cost_function = FunctionWithGradient(
             rosenbrock_function, finite_differences_gradient(rosenbrock_function)
         )
-        constraints = {"type": "ineq", "fun": lambda x: x[0] + x[1] - 3}
+        constraints = ({"type": "ineq", "fun": lambda x: x[0] + x[1] - 3},)
         optimizer = ScipyOptimizer(method="SLSQP")
         initial_params = np.array([0, 0])
 
