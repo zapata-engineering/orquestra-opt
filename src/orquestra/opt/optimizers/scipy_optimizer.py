@@ -64,7 +64,11 @@ class _CostFunctionWithBestValue(metaclass=_CostFunctionWithBestValueType):
 
     def _are_params_bounded(self, params: np.ndarray) -> bool:
         if self.bounds:
-            return bool(np.all(params >= self.bounds[0] & params <= self.bounds[1]))
+            return bool(
+                np.all(
+                    np.bitwise_and(params >= self.bounds[0], params <= self.bounds[1])
+                )
+            )
         return True
 
     def _are_params_constrained(self, params: np.ndarray) -> bool:
