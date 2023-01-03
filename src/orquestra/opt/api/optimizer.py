@@ -16,8 +16,7 @@ from ..history.recorder import (
     SimpleRecorderWithGradient,
 )
 from ..history.recorder import recorder as _recorder
-from . import CallableWithGradient, CostFunction
-from .cost_function import _CostFunction
+from .cost_function import CallableWithGradient, CostFunction
 
 
 class Optimizer(ABC):
@@ -149,15 +148,15 @@ class NestedOptimizer(ABC):
 
     Returns:
         An instance of OptimizeResult containing:
-            opt_value,
-            opt_params,
-            nit: total number of iterations of inner_optimizer,
-            nfev: total number of calls to cost function,
-            history: a list of HistoryEntrys.
-                If keep_history is False this should be an empty list.
-            gradient_history: if the cost function is a FunctionWithGradient,
-                this should be a list of HistoryEntrys representing
-                previous calls to the gradient.
+        - opt_value: optimal value of the objective function
+        - opt_params: corresponding optimal parameters
+        - nit: total number of iterations of inner_optimizer,
+        - nfev: total number of calls to cost function,
+        - history: a list of HistoryEntrys.
+          If keep_history is False this should be an empty list.
+        - gradient_history: if the cost function is a FunctionWithGradient,
+          this should be a list of HistoryEntrys representing
+          previous calls to the gradient.
     """
 
     @property
