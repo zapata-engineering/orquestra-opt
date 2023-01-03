@@ -14,25 +14,73 @@ from ..api import (
 )
 from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
+from .pso.continuous_pso_optimizer import _get_bounds_like_array
 
 
-class _CostFunctionWithBestValue:
-    def __init__(self, cost_function: Union[CallableWithGradient, Callable]) -> None:
+class _CostFunctionWithBestValueType(type):
+    def __instancecheck__(cls, obj: object) -> bool:
+        if (
+            isinstance(obj, Callable)
+            and hasattr(obj, "best_value")
+            and hasattr(obj, "best_params")
+        ):
+            return True
+        return False
+
+
+class _CostFunctionWithBestValue(metaclass=_CostFunctionWithBestValueType):
+    best_value: float = np.inf
+    best_params: np.ndarray = np.empty(1)
+
+    def __init__(
+        self,
+        cost_function: Union[CallableWithGradient, Callable],
+        constraints: Sequence[Dict[str, Callable]],
+        bounds: Union[
+            scipy.optimize.Bounds,
+            Sequence[Tuple[float, float]],
+            None,
+        ] = None,
+    ) -> None:
         self.cost_function = cost_function
         # Inherit all attributes from the cost function
         for attr in dir(cost_function):
             if not attr.startswith("__"):
                 setattr(self, attr, getattr(cost_function, attr))
-        self.best_value = np.inf
-        self.best_params = np.empty(1)
         self.best_params.fill(np.nan)
+        self.constraints = constraints
+        self.bounds = _get_bounds_like_array(bounds) if bounds is not None else None
 
-    def __call__(self, params: np.ndarray) -> float:
-        value = self.cost_function(params)
-        if value < self.best_value:
+    def __call__(self, parameters: np.ndarray) -> float:
+        value = self.cost_function(parameters)
+        if (
+            value < self.best_value
+            and self._are_params_bounded(parameters)
+            and self._are_params_constrained(parameters)
+        ):
             self.best_value = value
-            self.best_params = params
+            self.best_params = parameters
         return value
+
+    def _are_params_bounded(self, params: np.ndarray) -> bool:
+        if self.bounds:
+            return bool(np.all(params >= self.bounds[0] & params <= self.bounds[1]))
+        return True
+
+    def _are_params_constrained(self, params: np.ndarray) -> bool:
+        if self.constraints:
+            for constraint in self.constraints:
+                constraint_args = constraint.get("args", ())
+                assert isinstance(
+                    constraint_args, tuple
+                ), "If you pass args to the constraint, they must be a tuple."
+                if constraint["type"] == "eq":
+                    if not np.isclose(constraint["fun"](params, *constraint_args), 0):
+                        return False
+                elif constraint["type"] == "ineq":
+                    if constraint["fun"](params, *constraint_args) <= 0:
+                        return False
+        return True
 
 
 class ScipyOptimizer(Optimizer):
@@ -72,7 +120,7 @@ class ScipyOptimizer(Optimizer):
     def _preprocess_cost_function(
         self, cost_function: Union[CallableWithGradient, Callable]
     ) -> _CostFunctionWithBestValue:
-        return _CostFunctionWithBestValue(cost_function)
+        return _CostFunctionWithBestValue(cost_function, self.constraints, self.bounds)
 
     def _minimize(
         self,
