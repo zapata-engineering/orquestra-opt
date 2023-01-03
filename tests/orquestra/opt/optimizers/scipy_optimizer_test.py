@@ -109,10 +109,10 @@ class TestScipyOptimizer:
         )
         assert results_with_constraints.opt_params.sum() >= 3
 
-    # https://github.com/scipy/scipy/issues/17673 reports a function and that is minimised
-    # with an initial point that has a given cost function value which is lower than the
-    # optimised value by the Powell optimizer. This test is to ensure that our solution
-    # over scipy is not affected by this issue.
+    # https://github.com/scipy/scipy/issues/17673 reports a function and that is
+    # minimised with an initial point that has a given cost function value which is
+    # lower than the optimised value by the Powell optimizer. This test is to ensure
+    # that our solution over scipy is not affected by this issue.
     @pytest.mark.parametrize("method", ["Powell", "L-BFGS-B", "Nelder-Mead", "SLSQP"])
     def test_Langermann_function(self, method):
         # Definition of the function
