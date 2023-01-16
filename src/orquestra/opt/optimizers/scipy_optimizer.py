@@ -1,6 +1,7 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
+import warnings
 from typing import Callable, Dict, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -46,6 +47,17 @@ class _CostFunctionWithBestValue(metaclass=_CostFunctionWithBestValueType):
         # Inherit all attributes from the cost function
         for attr in dir(cost_function):
             if not attr.startswith("__"):
+                if attr in [
+                    "best_value",
+                    "best_params",
+                    "_are_params_bounded",
+                    "_are_params_constrained",
+                ]:
+                    warnings.warn(
+                        f"Attribute {attr} of the cost function is being overwritten "
+                        "by the optimizer.",
+                        UserWarning,
+                    )
                 setattr(self, attr, getattr(cost_function, attr))
         self.best_params.fill(np.nan)
         self.constraints = constraints
@@ -99,6 +111,7 @@ class ScipyOptimizer(Optimizer):
         ] = None,
         options: Optional[Dict] = None,
         recorder: RecorderFactory = _recorder,
+        store_best_parameters: bool = True,
     ):
         """
         Integration with scipy optimizers. Documentation for this module is minimal,
@@ -111,6 +124,8 @@ class ScipyOptimizer(Optimizer):
             options: dictionary with additional options for the optimizer.
             recorder: recorder object which defines how to store
                 the optimization history.
+            store_best_parameters: whether to wrap the cost function to store the best
+                parameters the optimizer has seen so far.
 
         """  # noqa: E501
         super().__init__(recorder=recorder)
@@ -120,11 +135,17 @@ class ScipyOptimizer(Optimizer):
         self.options = options
         self.constraints = [] if constraints is None else constraints
         self.bounds = bounds
+        self.store_best_parameters = store_best_parameters
 
     def _preprocess_cost_function(
         self, cost_function: Union[CallableWithGradient, Callable]
-    ) -> _CostFunctionWithBestValue:
-        return _CostFunctionWithBestValue(cost_function, self.constraints, self.bounds)
+    ) -> Union[CallableWithGradient, Callable, _CostFunctionWithBestValue]:
+        if self.store_best_parameters:
+            return _CostFunctionWithBestValue(
+                cost_function, self.constraints, self.bounds
+            )
+        else:
+            return cost_function
 
     def _minimize(
         self,
@@ -142,7 +163,6 @@ class ScipyOptimizer(Optimizer):
                 evaluations should be recorded.
 
         """
-        assert isinstance(cost_function, _CostFunctionWithBestValue)
         jacobian = None
         if isinstance(cost_function, CallableWithGradient) and callable(
             getattr(cost_function, "gradient")
@@ -158,8 +178,12 @@ class ScipyOptimizer(Optimizer):
             bounds=self.bounds,
             jac=jacobian,
         )
-        opt_value = cost_function.best_value
-        opt_params = cost_function.best_params
+        if isinstance(cost_function, _CostFunctionWithBestValue):
+            opt_value = cost_function.best_value
+            opt_params = cost_function.best_params
+        else:
+            opt_value = result.fun
+            opt_params = result.x
 
         nit = result.get("nit", None)
         nfev = result.get("nfev", None)
@@ -169,5 +193,5 @@ class ScipyOptimizer(Optimizer):
             opt_params=opt_params,
             nit=nit,
             nfev=nfev,
-            **construct_history_info(cost_function, keep_history)  # type: ignore
+            **construct_history_info(cost_function, keep_history),  # type: ignore
         )
