@@ -62,7 +62,7 @@ class TestSimpleGradientDescent:
         with pytest.raises(AssertionError):
             SimpleGradientDescent(0.1, -1)
 
-    def test_succeeds_to_minimize_when_cost_function_does_not_have_gradient_method(
+    def test_minimize_succeeds_when_cost_function_does_not_have_gradient_method(
         self, optimizer
     ):
         def sum_x_squared_no_gradient(x):
