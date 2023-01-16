@@ -124,18 +124,18 @@ class _CostFunctionWithBestCandidates:
                         self.candidates[i]["bounds"] = _get_tighter_bounds(
                             parameters, self.bounds
                         )
-                        break
-                    self.candidates.insert(
-                        i,
-                        {
-                            "cost": cost,
-                            "parameters": parameters,
-                            "bounds": _get_tighter_bounds(parameters, self.bounds),
-                        },
-                    )
-                    self.candidates.pop()
-                    self.candidates_hashes.insert(i, parameters_hash)
-                    self.candidates_hashes.pop()
+                    else:
+                        self.candidates.insert(
+                            i,
+                            {
+                                "cost": cost,
+                                "parameters": parameters,
+                                "bounds": _get_tighter_bounds(parameters, self.bounds),
+                            },
+                        )
+                        self.candidates.pop()
+                        self.candidates_hashes.insert(i, parameters_hash)
+                        self.candidates_hashes.pop()
                     break
             return cost
         candidate = self.candidates[self.candidate_index]
