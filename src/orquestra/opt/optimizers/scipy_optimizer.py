@@ -36,7 +36,7 @@ class _CostFunctionWithBestValue(metaclass=_CostFunctionWithBestValueType):
     def __init__(
         self,
         cost_function: Union[CallableWithGradient, Callable],
-        constraints: Sequence[Dict[str, Callable]],
+        constraints: Optional[Tuple[Dict[str, Callable]]],
         bounds: Union[
             scipy.optimize.Bounds,
             Sequence[Tuple[float, float]],
