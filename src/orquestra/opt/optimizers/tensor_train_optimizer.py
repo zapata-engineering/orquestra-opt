@@ -1,13 +1,11 @@
-from typing import Callable, List, Sequence, Tuple, Union
+from typing import Any, Callable, List, Sequence, Tuple, Union
 
 import numpy as np
 from scipy.optimize import OptimizeResult
 from ttopt import TTOpt
 
+from orquestra.opt.api import Bounds
 from orquestra.opt.api.functions import CallableWithGradient
-from orquestra.opt.optimizers.pso.continuous_pso_optimizer import (
-    Bounds,  # TODO: where should these Bounds live?
-)
 from orquestra.opt.optimizers.pso.continuous_pso_optimizer import _get_bounds_like_array
 
 from ..api import CostFunction, Optimizer, construct_history_info, optimization_result
@@ -83,7 +81,29 @@ def _get_tighter_bounds(
     return candidate - distances, candidate + distances
 
 
-class _CostFunctionWithBestCandidates:
+class _CostFunctionWithBestCandidatesMeta(type):
+    def __instancecheck__(self, instance):
+        if all(
+            [
+                hasattr(instance, attr)
+                for attr in (
+                    "cost_function",
+                    "candidates",
+                    "candidates_hashes",
+                    "bounds",
+                    "nfev",
+                    "candidate_index",
+                    "first_exploration",
+                    "gather_best_candidates",
+                )
+            ]
+        ):
+            return True
+        else:
+            return False
+
+
+class _CostFunctionWithBestCandidates(metaclass=_CostFunctionWithBestCandidatesMeta):
     def __init__(
         self,
         cost_function: CostFunction,
