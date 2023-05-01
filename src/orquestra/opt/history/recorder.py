@@ -373,8 +373,10 @@ def recorder(function, save_condition: SaveCondition = always):
         The return type depends on the passed callable. See overloads defined
         above to check for available variants. Here is a summary:
         - recorder is always callable
+
         - if `function` has gradient, so does the recorder. Calls to gradient
           and calls made by gradient are NOT recorded.
+
         - if `function` has possibility to store artifacts (i.e. accepts
           `store_artifact` argument, then so does the recorder.
     """

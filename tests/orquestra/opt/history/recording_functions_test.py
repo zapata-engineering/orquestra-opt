@@ -123,8 +123,11 @@ def test_recorder_records_only_calls_for_which_save_condition_evaluates_to_true(
     assert [entry.call_number for entry in function.history] == list(
         expected__call_numbers
     )
-    np.testing.assert_array_equal(
-        [entry.params for entry in function.history], list(expected_params)
+    assert all(
+        np.array_equal(arr1, arr2)
+        for arr1, arr2 in zip(
+            [entry.params for entry in function.history], expected_params
+        )
     )
     assert [entry.value for entry in function.history] == list(expected_values)
 
