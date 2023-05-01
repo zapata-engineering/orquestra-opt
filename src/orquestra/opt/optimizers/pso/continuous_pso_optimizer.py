@@ -1,20 +1,19 @@
-from typing import Callable, Optional, Sequence, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 import numpy as np
-from scipy.optimize import Bounds as ScipyBounds
 from scipy.optimize import OptimizeResult
 
 from orquestra.opt.api import (
+    Bounds,
     CallableWithGradient,
     Optimizer,
+    ScipyBounds,
     construct_history_info,
     optimization_result,
 )
 from orquestra.opt.history.recorder import RecorderFactory
 from orquestra.opt.history.recorder import recorder as _recorder
 from orquestra.opt.optimizers.pso.topologies import StarTopology, SwarmTopology
-
-Bounds = Union[ScipyBounds, Sequence[Tuple[float, float]], Tuple[float, float]]
 
 
 def _get_bounds_like_array(
