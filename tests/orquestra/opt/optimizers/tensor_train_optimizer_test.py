@@ -7,7 +7,7 @@ from orquestra.opt.optimizers.tensor_train_optimizer import TensorTrainOptimizer
 @pytest.fixture(
     params=[
         {
-            "n_grid_points": 21,
+            "n_grid_points": 25,
             "n_evaluations": 10000,
             "bounds": (-2.0, 2.0),
             "maximum_tensor_train_rank": 4,
