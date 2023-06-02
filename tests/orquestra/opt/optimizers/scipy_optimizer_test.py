@@ -46,7 +46,6 @@ class TestScipyOptimizer:
         assert contract(optimizer)
 
     def test_optimizers_work_with_bounds_provided(self, optimizer_with_bounds):
-
         # Given
         cost_function = FunctionWithGradient(
             sum_x_squared, finite_differences_gradient(sum_x_squared)
@@ -133,5 +132,7 @@ class TestScipyOptimizer:
         y0 = langermann(x0)
 
         optimiser = ScipyOptimizer(method=method, bounds=[(0, 10)] * 4)
-        result = optimiser.minimize(langermann, x0)
+        result = optimiser.minimize(langermann, x0, keep_history=True)
+        history_costs = [hel.value for hel in result.history]
         assert result.opt_value <= y0
+        assert result.opt_value == min(history_costs)
