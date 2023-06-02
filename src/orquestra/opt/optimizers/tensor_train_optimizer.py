@@ -191,6 +191,7 @@ class TensorTrainOptimizer(Optimizer):
         n_rounds: int = 1,
         maximum_number_of_candidates: int = 5,
         recorder: RecorderFactory = _recorder,
+        random_seed: int = 0,
     ):
         """
         Constructor of a TensorTrainOptimizer. This optimizer uses a tensor-train
@@ -214,6 +215,9 @@ class TensorTrainOptimizer(Optimizer):
             recorder Recorder factory for keeping history of calls to the objective
                 function.
         """
+        # Seeding because of internal random number generation by ttopt. See
+        # https://github.com/AndreiChertkov/ttopt/issues/1
+        np.random.seed(random_seed)
         super().__init__(recorder=recorder)
         self.n_grid_points = n_grid_points
         self.n_evaluations = n_evaluations
