@@ -13,6 +13,7 @@ from orquestra.opt.optimizers.tensor_train_optimizer import TensorTrainOptimizer
             "maximum_tensor_train_rank": 4,
             "n_rounds": 3,
             "maximum_number_of_candidates": 3,
+            "random_seed": 1,
         }
     ]
 )
