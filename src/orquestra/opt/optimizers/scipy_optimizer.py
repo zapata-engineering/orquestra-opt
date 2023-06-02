@@ -20,11 +20,7 @@ from .pso.continuous_pso_optimizer import _get_bounds_like_array
 
 class _CostFunctionWithBestValueType(type):
     def __instancecheck__(cls, obj: object) -> bool:
-        if (
-            isinstance(obj, Callable)
-            and hasattr(obj, "best_value")
-            and hasattr(obj, "best_params")
-        ):
+        if callable(obj) and hasattr(obj, "best_value") and hasattr(obj, "best_params"):
             return True
         return False
 
@@ -133,7 +129,7 @@ class ScipyOptimizer(Optimizer):
         if options is None:
             options = {}
         self.options = options
-        self.constraints = [] if constraints is None else constraints
+        self.constraints = constraints
         self.bounds = bounds
         self.store_best_parameters = store_best_parameters
 
