@@ -1,7 +1,7 @@
 import pytest
 
 from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
-from orquestra.opt.optimizers.least_squares import ScipyLeastSquares
+from orquestra.opt.optimizers import ScipyLeastSquares
 
 
 @pytest.fixture(params=[{"bounds": (-2.0, 2.0), "n_optimization_steps": 10000}])
