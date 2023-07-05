@@ -13,6 +13,24 @@ from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
 
 
+def _ttopt_init(n, rmax, rng: np.random.Generator, Y0=None, with_rank=False):
+    """Build initial approximation for the main algorithm."""
+    d = len(n)
+
+    r = [1]
+    for i in range(1, d):
+        r.append(min(rmax, n[i - 1] * r[i - 1]))
+    r.append(1)
+
+    if Y0 is None:
+        Y0 = [rng.normal(size=(r[i], n[i], r[i + 1])) for i in range(d)]
+
+    if with_rank:
+        return Y0, r
+    else:
+        return Y0
+
+
 def _get_n_evaluations_per_candidate(
     evaluation_budget: int, n_rounds: int, n_candidates_per_round: int
 ) -> List[int]:
@@ -217,7 +235,7 @@ class TensorTrainOptimizer(Optimizer):
         """
         # Seeding because of internal random number generation by ttopt. See
         # https://github.com/AndreiChertkov/ttopt/issues/1
-        np.random.seed(random_seed)
+        self.rng = np.random.default_rng(random_seed)
         super().__init__(recorder=recorder)
         self.n_grid_points = n_grid_points
         self.n_evaluations = n_evaluations
@@ -261,7 +279,10 @@ class TensorTrainOptimizer(Optimizer):
                     is_vect=False,
                     is_func=True,
                 )
-                ttopt.minimize(self.maximum_tensor_train_rank)
+                ttopt.minimize(
+                    self.maximum_tensor_train_rank,
+                    Y0=_ttopt_init(ttopt.n, self.maximum_tensor_train_rank, self.rng),
+                )
             else:
                 cost_function.first_exploration = False
                 for idx, candidate in enumerate(best_candidates):
