@@ -20,6 +20,7 @@ try:
     from .tensor_train_optimizer import TensorTrainOptimizer
 except ModuleNotFoundError:
     pass
+from .least_squares import ScipyLeastSquares
 from .scipy_optimizer import ScipyOptimizer
 from .search_points_optimizer import SearchPointsOptimizer
 from .simple_gradient_descent import SimpleGradientDescent
