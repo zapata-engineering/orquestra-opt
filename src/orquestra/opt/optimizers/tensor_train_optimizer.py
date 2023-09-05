@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Sequence, Tuple, Union
+from typing import Callable, List, Sequence, Tuple, Union
 
 import numpy as np
 from scipy.optimize import OptimizeResult
@@ -11,24 +11,6 @@ from orquestra.opt.optimizers.pso.continuous_pso_optimizer import _get_bounds_li
 from ..api import CostFunction, Optimizer, construct_history_info, optimization_result
 from ..history.recorder import RecorderFactory
 from ..history.recorder import recorder as _recorder
-
-
-def _ttopt_init(n, rmax, rng: np.random.Generator, Y0=None, with_rank=False):
-    """Build initial approximation for the main algorithm."""
-    d = len(n)
-
-    r = [1]
-    for i in range(1, d):
-        r.append(min(rmax, n[i - 1] * r[i - 1]))
-    r.append(1)
-
-    if Y0 is None:
-        Y0 = [rng.normal(size=(r[i], n[i], r[i + 1])) for i in range(d)]
-
-    if with_rank:
-        return Y0, r
-    else:
-        return Y0
 
 
 def _get_n_evaluations_per_candidate(
@@ -233,7 +215,7 @@ class TensorTrainOptimizer(Optimizer):
             recorder Recorder factory for keeping history of calls to the objective
                 function.
         """
-        self.rng = np.random.default_rng(random_seed)
+        self._random_seed = random_seed
         super().__init__(recorder=recorder)
         self.n_grid_points = n_grid_points
         self.n_evaluations = n_evaluations
@@ -277,10 +259,11 @@ class TensorTrainOptimizer(Optimizer):
                     is_vect=False,
                     is_func=True,
                 )
-                ttopt.minimize(
+                ttopt.optimize(
                     self.maximum_tensor_train_rank,
-                    Y0=_ttopt_init(ttopt.n, self.maximum_tensor_train_rank, self.rng),
+                    seed=self._random_seed,
                 )
+                self._random_seed += 1
             else:
                 cost_function.first_exploration = False
                 for idx, candidate in enumerate(best_candidates):
@@ -296,7 +279,10 @@ class TensorTrainOptimizer(Optimizer):
                         is_vect=False,
                         is_func=True,
                     )
-                    ttopt.minimize(self.maximum_tensor_train_rank)
+                    ttopt.optimize(
+                        self.maximum_tensor_train_rank, seed=self._random_seed
+                    )
+                    self._random_seed += 1
         best_candidate = cost_function.gather_best_candidates()[0]
         return optimization_result(
             opt_value=best_candidate["cost"],
