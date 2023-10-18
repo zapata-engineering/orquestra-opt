@@ -35,5 +35,11 @@ jobs:
           repository: zapatacomputing/orquestra-quantum
           path: orquestra-quantum
 
+      - name: Get orquestra-qiskit
+        uses: actions/checkout@v2
+        with:
+          repository: zapatacomputing/orquestra-qiskit
+          path: orquestra-qiskit
+
       # Installs project, checks codestyle
       - uses: ./subtrees/z_quantum_actions/actions/style
