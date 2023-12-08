@@ -3,6 +3,7 @@
 ################################################################################
 import numpy as np
 import pytest
+import warnings
 
 from orquestra.opt.api import FunctionWithGradient
 from orquestra.opt.api.optimizer_test import (
@@ -43,7 +44,9 @@ def optimizer_with_bounds(request):
 class TestScipyOptimizer:
     @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
     def test_optimizer_satisfies_contracts(self, contract, optimizer):
-        assert contract(optimizer)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            assert contract(optimizer)
 
     def test_optimizers_work_with_bounds_provided(self, optimizer_with_bounds):
         # Given
@@ -56,9 +59,11 @@ class TestScipyOptimizer:
         target_value = 8
 
         # When
-        results = optimizer_with_bounds.minimize(
-            cost_function, initial_params=initial_params
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            results = optimizer_with_bounds.minimize(
+                cost_function, initial_params=initial_params
+            )
 
         # Then
         assert results.opt_value == pytest.approx(target_value, abs=1e-3)

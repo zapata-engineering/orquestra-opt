@@ -3,6 +3,7 @@
 ################################################################################
 import numpy as np
 import pytest
+import warnings
 
 from orquestra.opt.api.optimizer_test import (
     _validate_changing_keep_history_does_not_change_results,
@@ -63,7 +64,9 @@ class TestScikitQuantOptimizer:
 
         optimizer = ScikitQuantOptimizer(method="imfil")
 
-        _ = optimizer.minimize(sum_x_squared, initial_params)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            _ = optimizer.minimize(sum_x_squared, initial_params)
 
         assert len(optimizer.bounds) == number_of_params
         np.testing.assert_array_equal(optimizer.bounds[0], np.array([-1000, 1000]))
