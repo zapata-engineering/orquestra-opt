@@ -1,9 +1,10 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
+import warnings
+
 import numpy as np
 import pytest
-import warnings
 
 from orquestra.opt.api.optimizer_test import (
     _validate_changing_keep_history_does_not_change_results,

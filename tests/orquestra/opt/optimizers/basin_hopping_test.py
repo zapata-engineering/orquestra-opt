@@ -1,8 +1,9 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
-import pytest
 import warnings
+
+import pytest
 
 from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
 from orquestra.opt.optimizers.basin_hopping import BasinHoppingOptimizer

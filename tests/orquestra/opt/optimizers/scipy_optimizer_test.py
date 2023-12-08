@@ -1,9 +1,10 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
+import warnings
+
 import numpy as np
 import pytest
-import warnings
 
 from orquestra.opt.api import FunctionWithGradient
 from orquestra.opt.api.optimizer_test import (
