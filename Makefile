@@ -9,3 +9,6 @@ github_actions:
 		${VENV_NAME}/bin/python3 -m pip install ./orquestra-quantum && \
 		${VENV_NAME}/bin/python3 -m pip install ./orquestra-qiskit && \
 		${VENV_NAME}/bin/python3 -m pip install -e '.[dev]'
+
+test:
+	$(PYTHON) -m pytest -W error tests
