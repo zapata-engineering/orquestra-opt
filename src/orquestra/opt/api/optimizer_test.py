@@ -6,8 +6,7 @@
 Note that this file won't be executed on its own by pytest.
 You need to define your own test cases that inherit from the ones defined here.
 """
-
-
+import warnings
 from typing import Callable
 
 import numpy as np
@@ -110,7 +109,10 @@ def _validate_optimizer_records_history_if_keep_history_is_true(optimizer):
         FunctionWithGradient(sum_x_squared, finite_differences_gradient(sum_x_squared))
     )
 
-    result = optimizer.minimize(cost_function, np.array([-1, 1]), keep_history=True)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        result = optimizer.minimize(cost_function, np.array([-1, 1]), keep_history=True)
+
     if len(result.history) != len(cost_function.history):
         return False
 

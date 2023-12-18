@@ -101,14 +101,15 @@ class ScikitQuantOptimizer(Optimizer):
             raise ValueError("TODO: reasonable message here")
 
         # if initial_params
-
-        result = scipy_minimize(
-            fun=cost_function,
-            x0=initial_params,
-            method=getattr(skq, self.method.lower()),
-            bounds=self.bounds,
-            options={"budget": self.budget},
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            result = scipy_minimize(
+                fun=cost_function,
+                x0=initial_params,
+                method=getattr(skq, self.method.lower()),
+                bounds=self.bounds,
+                options={"budget": self.budget},
+            )
 
         opt_value = result.fun
         opt_params = result.x

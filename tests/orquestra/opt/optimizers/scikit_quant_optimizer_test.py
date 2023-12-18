@@ -1,6 +1,8 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
+import warnings
+
 import numpy as np
 import pytest
 
@@ -63,7 +65,9 @@ class TestScikitQuantOptimizer:
 
         optimizer = ScikitQuantOptimizer(method="imfil")
 
-        _ = optimizer.minimize(sum_x_squared, initial_params)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            _ = optimizer.minimize(sum_x_squared, initial_params)
 
         assert len(optimizer.bounds) == number_of_params
         np.testing.assert_array_equal(optimizer.bounds[0], np.array([-1000, 1000]))

@@ -1,6 +1,8 @@
 ################################################################################
 # © Copyright 2022 Zapata Computing Inc.
 ################################################################################
+import warnings
+
 import pytest
 
 from orquestra.opt.api.optimizer_test import OPTIMIZER_CONTRACTS
@@ -61,4 +63,6 @@ def optimizer(request):
 class TestBasinHoppingOptimizer:
     @pytest.mark.parametrize("contract", OPTIMIZER_CONTRACTS)
     def test_optimizer_satisfies_contracts(self, contract, optimizer):
-        assert contract(optimizer)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            assert contract(optimizer)

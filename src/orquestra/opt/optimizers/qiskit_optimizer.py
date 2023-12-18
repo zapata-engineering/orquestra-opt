@@ -4,7 +4,7 @@
 from typing import Callable, Dict, Optional, Union
 
 import numpy as np
-from qiskit.algorithms.optimizers import ADAM, NFT, SPSA
+from qiskit_algorithms.optimizers import ADAM, NFT, SPSA  # type: ignore
 from scipy.optimize import OptimizeResult
 
 from ..api import (
